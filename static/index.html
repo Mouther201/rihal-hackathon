@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seating Planner</title>
+    <link rel="stylesheet" href="/static/styles.css?v=1">
+</head>
+<body>
+    <div class="container">
+        <h1>Seating Plan Generator</h1>
+        <div class="upload-form">
+            <input type="file" id="fileInput" class="file-input" accept=".csv">
+            <label for="fileInput" class="file-label">Choose CSV File</label>
+            <div id="fileName" class="status-message"></div>
+        </div>
+
+        <div id="spinner" class="spinner">
+            <div class="spinner-wheel"></div>
+            <div class="status-message">Generating seating plan...</div>
+        </div>
+
+        <div id="downloadLink" class="download-link">
+            <a href="#" class="download-button" id="downloadButton">Download Seating Plan</a>
+        </div>
+
+        <div id="floorPlans" class="floor-plans" style="display: none;">
+            <h2>Floor Plans</h2>
+            <div class="floor">
+                <img id="floor1" src="" alt="Floor 1 Plan">
+            </div>
+            <div class="floor">
+                <img id="floor2" src="" alt="Floor 2 Plan">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = `Selected file: ${file.name}`;
+            document.getElementById('spinner').style.display = 'block';
+            document.getElementById('downloadLink').style.display = 'none';
+            document.getElementById('floorPlans').style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.filename) {
+                    document.getElementById('downloadButton').href = `/download/${data.filename}`;
+                    document.getElementById('downloadLink').style.display = 'block';
+                    
+                    // Get floor visualizations
+                    const visResponse = await fetch('/visualize');
+                    const visData = await visResponse.json();
+                    
+                    if (!visData.error) {
+                        document.getElementById('floor1').src = visData.floor1_url;
+                        document.getElementById('floor2').src = visData.floor2_url;
+                        document.getElementById('floorPlans').style.display = 'block';
+                    }
+                } else {
+                    document.getElementById('fileName').textContent = 'Error generating seating plan';
+                }
+            } catch (error) {
+                document.getElementById('fileName').textContent = 'Error uploading file';
+            } finally {
+                document.getElementById('spinner').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
