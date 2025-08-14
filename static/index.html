@@ -11,13 +11,56 @@
             font-family: 'Courier Prime', monospace;
             margin: 0;
             padding: 20px;
-            background-color: #D9D9D9;
             color: #333;
+            position: relative;
+            background-color: #D9D9D9; /* Fallback if video doesn't load */
         }
+        
+        /* Video background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .video-background video {
+            position: absolute;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            opacity: 0.85; /* Makes video more subtle */
+        }
+        
+        /* Overlay to make content more readable */
+        .video-background::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(217, 217, 217, 0.3); /* Semi-transparent layer */
+        }
+        
         .container {
             max-width: 1000px;
             margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.92);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            position: relative; /* Ensure content is above the video */
         }
+        
         .header {
             display: flex;
             align-items: center;
@@ -171,6 +214,15 @@
     </style>
 </head>
 <body>
+    <!-- Add video background element -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="/static/background.mp4" type="video/mp4">
+            <!-- Fallback message if video cannot be played -->
+            Your browser does not support background videos.
+        </video>
+    </div>
+
     <div class="container">
         <header class="header">
             <img src="/static/logo.gif" alt="Seating Planner Logo" class="logo">
