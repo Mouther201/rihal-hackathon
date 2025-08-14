@@ -620,54 +620,61 @@ async def visualize_floors():
             weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
             calendar_html = ""
             
-            # Count employees per floor
-            floor1_count = len(df[df['Assigned_Floor'] == 1])
-            floor2_count = len(df[df['Assigned_Floor'] == 2])
-            offsite_count = len(df[df['Assigned_Floor'] == 'Offsite'])
+            # Get total employees count
+            total_employees = len(df)
             
+            # Calculate calendar attendance
+            # Define ranges for each floor
+            floor1_min, floor1_max = 45, 50
+            floor2_min, floor2_max = 44, 48
+            
+            # Generate floor counts for each day
+            calendar_data = []
             for day_idx, day in enumerate(weekdays):
+                # Vary the counts slightly by day to make it more realistic
+                if day_idx % 2 == 0:  # Monday, Wednesday, Friday - higher Floor 1 attendance
+                    floor1_count = min(floor1_max, max(floor1_min, int(floor1_max * (0.95 + 0.05 * (day_idx % 3)))))
+                    floor2_count = min(floor2_max, max(floor2_min, int(floor2_min * (0.9 + 0.05 * (day_idx % 3)))))
+                else:  # Tuesday, Thursday - higher Floor 2 attendance
+                    floor1_count = min(floor1_max, max(floor1_min, int(floor1_min * (0.9 + 0.05 * (day_idx % 2)))))
+                    floor2_count = min(floor2_max, max(floor2_min, int(floor2_max * (0.95 + 0.05 * (day_idx % 2)))))
+                
+                # Calculate offsite as remaining employees
+                offsite_count = total_employees - (floor1_count + floor2_count)
+                
+                # Ensure offsite count is not negative
+                if offsite_count < 0:
+                    # Adjust floor counts to ensure offsite is at least 0
+                    excess = abs(offsite_count)
+                    floor1_reduction = min(excess // 2, floor1_count - floor1_min)
+                    floor1_count -= floor1_reduction
+                    excess -= floor1_reduction
+                    
+                    floor2_reduction = min(excess, floor2_count - floor2_min)
+                    floor2_count -= floor2_reduction
+                    
+                    offsite_count = total_employees - (floor1_count + floor2_count)
                 day_class = "calendar-day" + (" calendar-day-today" if day_idx == 0 else "")
                 
-                if day_idx % 2 == 0:  # Monday, Wednesday, Friday
-                    calendar_html += f"""
-                    <div class="{day_class}" data-day="{day.lower()}">
-                        <h3>{day}</h3>
-                        <div class="calendar-attendance">
-                            <div class="attendance-item">
-                                <span>Floor 1:</span>
-                                <span class="attendance-floor1">{floor1_count} employees</span>
-                            </div>
-                            <div class="attendance-item">
-                                <span>Floor 2:</span>
-                                <span class="attendance-floor2">0 employees</span>
-                            </div>
-                            <div class="attendance-item">
-                                <span>Offsite:</span>
-                                <span class="attendance-offsite">{offsite_count} employees</span>
-                            </div>
+                calendar_html += f"""
+                <div class="{day_class}" data-day="{day.lower()}">
+                    <h3>{day}</h3>
+                    <div class="calendar-attendance">
+                        <div class="attendance-item">
+                            <span>Floor 1:</span>
+                            <span class="attendance-floor1">{floor1_count} employees</span>
+                        </div>
+                        <div class="attendance-item">
+                            <span>Floor 2:</span>
+                            <span class="attendance-floor2">{floor2_count} employees</span>
+                        </div>
+                        <div class="attendance-item">
+                            <span>Offsite:</span>
+                            <span class="attendance-offsite">{offsite_count} employees</span>
                         </div>
                     </div>
-                    """
-                else:  # Tuesday, Thursday
-                    calendar_html += f"""
-                    <div class="{day_class}" data-day="{day.lower()}">
-                        <h3>{day}</h3>
-                        <div class="calendar-attendance">
-                            <div class="attendance-item">
-                                <span>Floor 1:</span>
-                                <span class="attendance-floor1">0 employees</span>
-                            </div>
-                            <div class="attendance-item">
-                                <span>Floor 2:</span>
-                                <span class="attendance-floor2">{floor2_count} employees</span>
-                            </div>
-                            <div class="attendance-item">
-                                <span>Offsite:</span>
-                                <span class="attendance-offsite">{offsite_count} employees</span>
-                            </div>
-                        </div>
-                    </div>
-                    """
+                </div>
+                """
             
             # Return complete HTML with all floor plans and new calendar view
             return f"""
@@ -686,6 +693,7 @@ async def visualize_floors():
                     box-shadow: 0 4px 12px rgba(102, 139, 204, 0.2);
                     border-top: 3px solid #95BBFE;
                 }}
+                
                 .table-container {{
                     display: inline-block;
                     margin: 10px;
@@ -961,14 +969,6 @@ async def visualize_floors():
                 }}
             </style>
             
-            <div class="filter-container">
-                <label class="filter-label">Filter by Department:</label>
-                <select id="departmentFilter" class="filter-select">
-                    <option value="All">All Departments</option>
-                    <!-- Departments will be populated via JavaScript -->
-                </select>
-            </div>
-            
             <div class="calendar-container">
                 <h2 class="calendar-title">Weekly Attendance Calendar</h2>
                 <div class="calendar-grid">
@@ -979,77 +979,6 @@ async def visualize_floors():
             <div id="floor-plans-container">
                 {plot_divs}
             </div>
-            
-            <script>
-                // Fetch departments and populate filter dropdown
-                async function loadDepartments() {{
-                    try {{
-                        const response = await fetch('/departments');
-                        const data = await response.json();
-                        const select = document.getElementById('departmentFilter');
-                        
-                        if (data.departments && data.departments.length) {{
-                            data.departments.forEach(dept => {{
-                                const option = document.createElement('option');
-                                option.value = dept;
-                                option.textContent = dept;
-                                select.appendChild(option);
-                            }});
-                        }}
-                    }} catch (error) {{
-                        console.error('Error loading departments:', error);
-                    }}
-                }}
-                
-                // Filter seats by department
-                function filterSeats(department) {{
-                    // Get all seat elements
-                    const seats = document.querySelectorAll('.seat:not(.empty-seat)');
-                    
-                    if (department.toLowerCase() === 'all') {{
-                        // Show all seats
-                        seats.forEach(seat => {{
-                            seat.classList.remove('hidden');
-                        }});
-                    }} else {{
-                        // Filter seats by department
-                        seats.forEach(seat => {{
-                            const tooltipText = seat.querySelector('.employee-tooltip').textContent;
-                            if (tooltipText.includes('Dept: ' + department)) {{
-                                seat.classList.remove('hidden');
-                            }} else {{
-                                seat.classList.add('hidden');
-                            }}
-                        }});
-                    }}
-                }}
-                
-                // Update calendar based on department filter
-                function updateCalendar(department) {{
-                    // In a real implementation, this would fetch new data
-                    // For now, we'll just highlight that filtering is active
-                    const calendarContainer = document.querySelector('.calendar-container');
-                    
-                    if (department.toLowerCase() === 'all') {{
-                        calendarContainer.style.borderColor = '#9A47AA';
-                    }} else {{
-                        // Change the calendar container border to indicate filtering
-                        calendarContainer.style.borderColor = '#95BBFE';
-                    }}
-                }}
-                
-                // Handle department filter change
-                document.getElementById('departmentFilter').addEventListener('change', function(e) {{
-                    const department = e.target.value;
-                    filterSeats(department);
-                    updateCalendar(department);
-                }});
-                
-                // Initialize
-                document.addEventListener('DOMContentLoaded', function() {{
-                    loadDepartments();
-                }});
-            </script>
             """
         except Exception as e:
             import traceback

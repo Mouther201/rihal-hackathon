@@ -96,9 +96,11 @@
             100% { transform: rotate(360deg); }
         }
         .download-link {
-            display: none;
+            display: none; /* Set initial state to none */
             text-align: center;
             margin: 20px 0;
+            justify-content: center;
+            gap: 15px;
         }
         .download-button {
             display: inline-block;
@@ -149,6 +151,23 @@
             font-family: 'Courier Prime', monospace;
             background-color: white;
         }
+        
+        .calendar-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.4);
+        }
+        
+        .calendar-button:hover {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -173,16 +192,6 @@
             </div>
         </div>
 
-        <div class="features-bar" id="featuresBar">
-            <div class="filter-container">
-                <label class="filter-label">Filter by Department:</label>
-                <select id="mainDepartmentFilter" class="filter-select">
-                    <option value="All">All Departments</option>
-                    <!-- Will be populated dynamically -->
-                </select>
-            </div>
-        </div>
-
         <div id="spinner" class="spinner">
             <div class="spinner-outer">
                 <div class="spinner-wheel"></div>
@@ -191,10 +200,20 @@
 
         <div id="downloadLink" class="download-link">
             <a href="#" class="download-button" id="downloadButton">Download Seating Plan</a>
+            <a href="https://calendar.google.com/" target="_blank" class="calendar-button" id="calendarButton">Save to Google Calendar</a>
         </div>
 
         <div id="floorPlans" class="floor-plans">
             <h2>Interactive Floor Plans</h2>
+            <div class="features-bar" id="featuresBar">
+                <div class="filter-container">
+                    <label class="filter-label">Filter by Department:</label>
+                    <select id="mainDepartmentFilter" class="filter-select">
+                        <option value="All">All Departments</option>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+            </div>
             <div id="floorPlansContent"></div>
         </div>
     </div>
@@ -208,7 +227,7 @@
             // Update UI
             document.getElementById('fileName').textContent = `Selected file: ${file.name}`;
             document.getElementById('spinner').style.display = 'flex';
-            document.getElementById('downloadLink').style.display = 'none';
+            document.getElementById('downloadLink').style.display = 'none'; // Ensure it's hidden during upload
             document.getElementById('floorPlans').style.display = 'none';
             document.getElementById('floorPlansContent').innerHTML = '';
             document.getElementById('featuresBar').style.display = 'none';
@@ -228,7 +247,7 @@
                 
                 if (data.filename) {
                     document.getElementById('downloadButton').href = `/download/${data.filename}`;
-                    document.getElementById('downloadLink').style.display = 'block';
+                    document.getElementById('downloadLink').style.display = 'flex'; // Set to flex here
                     
                     const visResponse = await fetch('/visualize');
                     if (visResponse.ok) {
