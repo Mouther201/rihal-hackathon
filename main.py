@@ -388,22 +388,22 @@ def create_simple_floor_diagram(floor_num, floor_df):
     # Get unique departments for color coding
     departments = floor_df['Department'].unique()
     
-    # Define floor-specific color palettes - more professional and coordinated
+    # Define floor-specific color palettes using the new theme colors
     floor_palettes = {
-        1: [  # Floor 1: Blue palette (from dark blue to blue-grey)
-            "#1A237E", "#283593", "#303F9F", "#3949AB", "#3F51B5", 
-            "#5C6BC0", "#7986CB", "#9FA8DA", "#C5CAE9", "#8C9EFF"
+        1: [  # Floor 1: Blue palette based on #95BBFE and #668BCC
+            "#668BCC", "#7597D1", "#85A3D6", "#95AFDB", "#95BBFE", 
+            "#A5C5FE", "#B5CFFE", "#C5DAFE", "#D5E6FE", "#E5F2FE"
         ],
-        2: [  # Floor 2: Green palette (from dark green to teal)
-            "#1B5E20", "#2E7D32", "#388E3C", "#43A047", "#4CAF50", 
-            "#66BB6A", "#81C784", "#A5D6A7", "#C8E6C9", "#00C853"
+        2: [  # Floor 2: Purple-tinged palette based on primary colors with some #9A47AA
+            "#9A47AA", "#8A5CB8", "#7A71C6", "#6986D4", "#5A9BE2", 
+            "#4AB0F0", "#3AC5FE", "#95BBFE", "#668BCC", "#566BA9"
         ]
     }
     
     # Use a default palette if the floor isn't specifically defined
     default_palette = [
-        "#3366CC", "#DC3912", "#FF9900", "#109618", "#990099", "#0099C6",
-        "#DD4477", "#66AA00", "#B82E2E", "#316395"
+        "#95BBFE", "#668BCC", "#9A47AA", "#7A71C6", "#6986D4", 
+        "#5A9BE2", "#4AB0F0", "#3AC5FE"
     ]
     
     # Get the appropriate color palette for this floor
@@ -424,8 +424,8 @@ def create_simple_floor_diagram(floor_num, floor_df):
     legend_html += '</div>'
     
     # Add floor summary with floor-specific styling
-    floor_accent_colors = {1: "#3F51B5", 2: "#4CAF50"}
-    accent_color = floor_accent_colors.get(floor_num, "#4285F4")
+    floor_accent_colors = {1: "#95BBFE", 2: "#9A47AA"}
+    accent_color = floor_accent_colors.get(floor_num, "#668BCC")
     
     floor_summary = f"""
     <div class="floor-summary" style="border-left: 4px solid {accent_color};">
@@ -465,16 +465,15 @@ def create_simple_floor_diagram(floor_num, floor_df):
                 dept = emp['Department']
                 
                 # Get base color for this department
-                base_color = dept_colors.get(dept, "#cccccc")
+                base_color = dept_colors.get(dept, "#95BBFE")
                 
-                # Create a more subtle gradient variation using seat position
-                # This creates a consistent look within departments
-                if floor_num == 1:  # Blue floor - darker to lighter gradient
-                    gradient_end = "#E8EAF6"  # Light blue-grey
-                elif floor_num == 2:  # Green floor - darker to lighter gradient
-                    gradient_end = "#E8F5E9"  # Light green-grey
+                # Create a gradient using the new theme colors
+                if floor_num == 1:
+                    gradient_end = "#FFFFFF"  # White end for gradient
+                elif floor_num == 2:
+                    gradient_end = "#F5E6FA"  # Light purple-white for floor 2
                 else:
-                    gradient_end = "#F5F5F5"  # Light grey
+                    gradient_end = "#FFFFFF"
                 
                 # Add a subtle gradient effect using CSS
                 tables_html += f"""
@@ -488,11 +487,11 @@ def create_simple_floor_diagram(floor_num, floor_df):
                 # Empty seats with floor-specific styling
                 empty_seat_style = ""
                 if floor_num == 1:
-                    empty_seat_style = "background: linear-gradient(135deg, #E3F2FD, #C5CAE9);"
+                    empty_seat_style = "background: linear-gradient(135deg, #D5E6FE, #FFFFFF);"
                 elif floor_num == 2:
-                    empty_seat_style = "background: linear-gradient(135deg, #E8F5E9, #C8E6C9);"
+                    empty_seat_style = "background: linear-gradient(135deg, #E5D5EA, #FFFFFF);"
                 else:
-                    empty_seat_style = "background: linear-gradient(135deg, #e0e0e0, #d0d0d0);"
+                    empty_seat_style = "background: linear-gradient(135deg, #D9D9D9, #FFFFFF);"
                 
                 tables_html += f"""
                 <div class="seat empty-seat" style="left: {left}%; top: {top}%; {empty_seat_style}">
@@ -551,12 +550,19 @@ async def visualize_floors():
             # Return complete HTML with all floor plans
             return f"""
             <style>
+                @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+                
+                * {{
+                    font-family: 'Courier Prime', monospace;
+                }}
+                
                 .floor-plot-container {{
                     margin-bottom: 40px;
                     padding: 20px;
-                    background-color: #ffffff;
+                    background-color: #FFFFFF;
                     border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    box-shadow: 0 4px 12px rgba(102, 139, 204, 0.2);
+                    border-top: 3px solid #95BBFE;
                 }}
                 .table-container {{
                     display: inline-block;
@@ -568,10 +574,10 @@ async def visualize_floors():
                     width: 200px;
                     height: 200px;
                     border-radius: 50%;
-                    background: radial-gradient(circle, #ffffff 0%, #f0f0f0 100%);
-                    border: 2px solid #ddd;
+                    background: radial-gradient(circle, #FFFFFF 0%, #F5F5F5 100%);
+                    border: 2px solid #95BBFE;
                     margin: 20px auto;
-                    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+                    box-shadow: 0 3px 10px rgba(102, 139, 204, 0.15);
                 }}
                 .seat {{
                     position: absolute;
@@ -582,47 +588,50 @@ async def visualize_floors():
                     align-items: center;
                     justify-content: center;
                     font-weight: bold;
-                    color: white;
+                    color: #333333;
                     font-size: 14px;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                     transform: translate(-50%, -50%);
                     transition: transform 0.2s ease, box-shadow 0.2s ease;
                     border: 2px solid rgba(255,255,255,0.7);
+                    font-family: 'Courier Prime', monospace;
                 }}
                 .seat:hover {{
                     transform: translate(-50%, -50%) scale(1.1);
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                    box-shadow: 0 4px 8px rgba(102, 139, 204, 0.4);
                     z-index: 10;
                 }}
                 .empty-seat {{
-                    color: #999;
-                    border: 1px dashed #bbb;
+                    color: #888;
+                    border: 1px dashed #95BBFE;
                 }}
                 .emp-id {{
                     font-size: 14px;
                     font-weight: bold;
-                    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+                    text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+                    font-family: 'Courier Prime', monospace;
                 }}
                 .seat-num {{
                     position: absolute;
                     font-size: 10px;
-                    background: rgba(255,255,255,0.9);
+                    background: #FFFFFF;
                     border-radius: 50%;
                     width: 16px;
                     height: 16px;
                     text-align: center;
                     line-height: 16px;
-                    color: #333;
+                    color: #668BCC;
                     top: -5px;
                     right: -5px;
-                    border: 1px solid #ddd;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    border: 1px solid #95BBFE;
+                    box-shadow: 0 1px 3px rgba(102, 139, 204, 0.2);
+                    font-family: 'Courier Prime', monospace;
                 }}
                 .employee-tooltip {{
                     visibility: hidden;
                     width: 120px;
-                    background-color: rgba(51,51,51,0.95);
-                    color: #fff;
+                    background-color: #668BCC;
+                    color: #FFFFFF;
                     text-align: center;
                     border-radius: 6px;
                     padding: 8px;
@@ -634,7 +643,8 @@ async def visualize_floors():
                     opacity: 0;
                     transition: opacity 0.3s, transform 0.3s;
                     transform: translateY(10px);
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    box-shadow: 0 5px 15px rgba(102, 139, 204, 0.4);
+                    font-family: 'Courier Prime', monospace;
                 }}
                 .seat:hover .employee-tooltip {{
                     visibility: visible;
@@ -645,23 +655,27 @@ async def visualize_floors():
                     text-align: center;
                     font-weight: 500;
                     margin-bottom: 5px;
-                    color: #444;
+                    color: #668BCC;
                     font-size: 14px;
+                    font-family: 'Courier Prime', monospace;
                 }}
                 .legend {{
                     margin-top: 15px;
                     margin-bottom: 20px;
                     padding: 12px 15px;
                     border-radius: 6px;
-                    background-color: #f9f9f9;
-                    border: 1px solid #eaeaea;
+                    background-color: #FFFFFF;
+                    border: 1px solid #D9D9D9;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                    font-family: 'Courier Prime', monospace;
                 }}
                 .legend-item {{
                     display: inline-block;
                     margin-right: 15px;
                     margin-bottom: 8px;
                     font-size: 13px;
+                    color: #555;
+                    font-family: 'Courier Prime', monospace;
                 }}
                 .legend-color {{
                     display: inline-block;
@@ -676,22 +690,26 @@ async def visualize_floors():
                 .floor-summary {{
                     margin-bottom: 15px;
                     padding: 12px 15px;
-                    background-color: #f5f5f5;
+                    background-color: #F5F9FF;
                     border-radius: 6px;
                     font-size: 15px;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                    box-shadow: 0 1px 3px rgba(102, 139, 204, 0.1);
+                    color: #668BCC;
+                    font-family: 'Courier Prime', monospace;
                 }}
-                h2, h3 {{
-                    font-family: Arial, sans-serif;
-                    color: #333;
-                    margin-bottom: 15px;
+                h2, h3, strong, p, div {{
+                    font-family: 'Courier Prime', monospace;
                 }}
                 h2 {{
                     font-size: 22px;
-                    font-weight: 500;
+                    font-weight: 700;
                     text-align: center;
                     margin-bottom: 20px;
-                    color: #1a73e8;
+                    background: linear-gradient(135deg, #668BCC, #9A47AA);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    font-family: 'Courier Prime', monospace;
                 }}
             </style>
             <div id="floor-plans-container">
