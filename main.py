@@ -503,6 +503,75 @@ def create_simple_floor_diagram(floor_num, floor_df):
     
     return floor_summary + legend_html + tables_html
 
+@app.get("/departments")
+async def get_departments():
+    """Return list of departments from the seating plan"""
+    if Path("seating_plan.csv").exists():
+        df = pd.read_csv("seating_plan.csv")
+        departments = sorted(df['Department'].unique().tolist())
+        return {"departments": departments}
+    return {"departments": []}
+
+@app.get("/filter/{department}")
+async def filter_by_department(department: str):
+    """Return filtered seating data for a specific department"""
+    if Path("seating_plan.csv").exists():
+        df = pd.read_csv("seating_plan.csv")
+        if department.lower() == "all":
+            filtered_df = df
+        else:
+            filtered_df = df[df['Department'] == department]
+        
+        # Convert to list of dictionaries for JSON response
+        filtered_data = filtered_df.to_dict(orient='records')
+        return {"data": filtered_data, "count": len(filtered_data)}
+    return {"error": "No seating plan available"}
+
+@app.get("/calendar-data")
+async def get_calendar_data(department: str = "All"):
+    """Return calendar attendance data, optionally filtered by department"""
+    if Path("seating_plan.csv").exists():
+        df = pd.read_csv("seating_plan.csv")
+        
+        # Filter by department if specified
+        if department.lower() != "all":
+            df = df[df['Department'] == department]
+        
+        # Count employees by floor for calendar view
+        floor_counts = df['Assigned_Floor'].value_counts().to_dict()
+        
+        # Format data for calendar display
+        # Let's assume a 5-day work week (Mon-Fri)
+        # In a real app, you would use actual dates
+        weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        
+        calendar_data = []
+        # Generate simple pattern: floor 1 on Mon/Wed/Fri, floor 2 on Tue/Thu
+        # In a real app, this would be based on actual scheduling data
+        for day_idx, day in enumerate(weekdays):
+            day_data = {
+                "day": day,
+                "floor1": 0,
+                "floor2": 0,
+                "offsite": 0
+            }
+            
+            # Alternate between floors based on day of week
+            if day_idx % 2 == 0:  # Mon, Wed, Fri
+                # Everyone assigned to floor 1 works on these days
+                day_data["floor1"] = len(df[df['Assigned_Floor'] == 1])
+                day_data["offsite"] = len(df[df['Assigned_Floor'] == 'Offsite']) 
+            else:  # Tue, Thu
+                # Everyone assigned to floor 2 works on these days
+                day_data["floor2"] = len(df[df['Assigned_Floor'] == 2])
+                day_data["offsite"] = len(df[df['Assigned_Floor'] == 'Offsite'])
+            
+            calendar_data.append(day_data)
+        
+        return {"calendar": calendar_data, "department": department}
+    
+    return {"error": "No seating plan available"}
+
 @app.get("/visualize", response_class=HTMLResponse)
 async def visualize_floors():
     if Path("seating_plan.csv").exists():
@@ -547,7 +616,60 @@ async def visualize_floors():
                 </div>
                 """
             
-            # Return complete HTML with all floor plans
+            # Generate calendar data directly here
+            weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+            calendar_html = ""
+            
+            # Count employees per floor
+            floor1_count = len(df[df['Assigned_Floor'] == 1])
+            floor2_count = len(df[df['Assigned_Floor'] == 2])
+            offsite_count = len(df[df['Assigned_Floor'] == 'Offsite'])
+            
+            for day_idx, day in enumerate(weekdays):
+                day_class = "calendar-day" + (" calendar-day-today" if day_idx == 0 else "")
+                
+                if day_idx % 2 == 0:  # Monday, Wednesday, Friday
+                    calendar_html += f"""
+                    <div class="{day_class}" data-day="{day.lower()}">
+                        <h3>{day}</h3>
+                        <div class="calendar-attendance">
+                            <div class="attendance-item">
+                                <span>Floor 1:</span>
+                                <span class="attendance-floor1">{floor1_count} employees</span>
+                            </div>
+                            <div class="attendance-item">
+                                <span>Floor 2:</span>
+                                <span class="attendance-floor2">0 employees</span>
+                            </div>
+                            <div class="attendance-item">
+                                <span>Offsite:</span>
+                                <span class="attendance-offsite">{offsite_count} employees</span>
+                            </div>
+                        </div>
+                    </div>
+                    """
+                else:  # Tuesday, Thursday
+                    calendar_html += f"""
+                    <div class="{day_class}" data-day="{day.lower()}">
+                        <h3>{day}</h3>
+                        <div class="calendar-attendance">
+                            <div class="attendance-item">
+                                <span>Floor 1:</span>
+                                <span class="attendance-floor1">0 employees</span>
+                            </div>
+                            <div class="attendance-item">
+                                <span>Floor 2:</span>
+                                <span class="attendance-floor2">{floor2_count} employees</span>
+                            </div>
+                            <div class="attendance-item">
+                                <span>Offsite:</span>
+                                <span class="attendance-offsite">{offsite_count} employees</span>
+                            </div>
+                        </div>
+                    </div>
+                    """
+            
+            # Return complete HTML with all floor plans and new calendar view
             return f"""
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
@@ -711,10 +833,223 @@ async def visualize_floors():
                     background-clip: text;
                     font-family: 'Courier Prime', monospace;
                 }}
+                
+                /* Filter styles */
+                .filter-container {{
+                    margin-bottom: 20px;
+                    padding: 15px;
+                    background-color: #FFFFFF;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(102, 139, 204, 0.2);
+                }}
+                
+                .filter-label {{
+                    display: inline-block;
+                    margin-right: 10px;
+                    font-weight: bold;
+                    color: #668BCC;
+                }}
+                
+                .filter-select {{
+                    padding: 8px 12px;
+                    border: 2px solid #95BBFE;
+                    border-radius: 4px;
+                    background-color: white;
+                    font-family: 'Courier Prime', monospace;
+                    color: #333;
+                    cursor: pointer;
+                    min-width: 200px;
+                }}
+                
+                .filter-select:focus {{
+                    outline: none;
+                    border-color: #9A47AA;
+                    box-shadow: 0 0 0 2px rgba(154, 71, 170, 0.2);
+                }}
+                
+                /* Calendar styles */
+                .calendar-container {{
+                    margin-bottom: 40px;
+                    padding: 20px;
+                    background-color: #FFFFFF;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(102, 139, 204, 0.2);
+                    border-top: 3px solid #9A47AA;
+                }}
+                
+                .calendar-title {{
+                    text-align: center;
+                    margin-bottom: 20px;
+                    background: linear-gradient(135deg, #9A47AA, #668BCC);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    font-size: 22px;
+                    font-weight: 700;
+                }}
+                
+                .calendar-grid {{
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 12px;
+                    justify-content: space-between;
+                }}
+                
+                .calendar-day {{
+                    flex: 1;
+                    min-width: 150px;
+                    padding: 15px;
+                    background: linear-gradient(to bottom, rgba(149, 187, 254, 0.1), rgba(255, 255, 255, 1));
+                    border-radius: 8px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+                    border-left: 3px solid #95BBFE;
+                    transition: transform 0.2s ease, box-shadow 0.2s ease;
+                }}
+                
+                .calendar-day:hover {{
+                    transform: translateY(-3px);
+                    box-shadow: 0 5px 15px rgba(102, 139, 204, 0.15);
+                }}
+                
+                .calendar-day-today {{
+                    border-left: 3px solid #9A47AA;
+                    background: linear-gradient(to bottom, rgba(154, 71, 170, 0.1), rgba(255, 255, 255, 1));
+                    box-shadow: 0 3px 8px rgba(154, 71, 170, 0.15);
+                }}
+                
+                .calendar-day h3 {{
+                    margin-top: 0;
+                    color: #668BCC;
+                    font-size: 16px;
+                    border-bottom: 1px solid #eee;
+                    padding-bottom: 8px;
+                }}
+                
+                .calendar-day-today h3 {{
+                    color: #9A47AA;
+                }}
+                
+                .calendar-attendance {{
+                    margin-top: 10px;
+                    font-size: 14px;
+                }}
+                
+                .attendance-item {{
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 5px;
+                    padding: 3px 0;
+                }}
+                
+                .attendance-floor1 {{
+                    color: #95BBFE;
+                    font-weight: bold;
+                }}
+                
+                .attendance-floor2 {{
+                    color: #9A47AA;
+                    font-weight: bold;
+                }}
+                
+                .attendance-offsite {{
+                    color: #888;
+                    font-weight: bold;
+                }}
+                
+                .hidden {{
+                    display: none !important;
+                }}
             </style>
+            
+            <div class="filter-container">
+                <label class="filter-label">Filter by Department:</label>
+                <select id="departmentFilter" class="filter-select">
+                    <option value="All">All Departments</option>
+                    <!-- Departments will be populated via JavaScript -->
+                </select>
+            </div>
+            
+            <div class="calendar-container">
+                <h2 class="calendar-title">Weekly Attendance Calendar</h2>
+                <div class="calendar-grid">
+                    {calendar_html}
+                </div>
+            </div>
+            
             <div id="floor-plans-container">
                 {plot_divs}
             </div>
+            
+            <script>
+                // Fetch departments and populate filter dropdown
+                async function loadDepartments() {{
+                    try {{
+                        const response = await fetch('/departments');
+                        const data = await response.json();
+                        const select = document.getElementById('departmentFilter');
+                        
+                        if (data.departments && data.departments.length) {{
+                            data.departments.forEach(dept => {{
+                                const option = document.createElement('option');
+                                option.value = dept;
+                                option.textContent = dept;
+                                select.appendChild(option);
+                            }});
+                        }}
+                    }} catch (error) {{
+                        console.error('Error loading departments:', error);
+                    }}
+                }}
+                
+                // Filter seats by department
+                function filterSeats(department) {{
+                    // Get all seat elements
+                    const seats = document.querySelectorAll('.seat:not(.empty-seat)');
+                    
+                    if (department.toLowerCase() === 'all') {{
+                        // Show all seats
+                        seats.forEach(seat => {{
+                            seat.classList.remove('hidden');
+                        }});
+                    }} else {{
+                        // Filter seats by department
+                        seats.forEach(seat => {{
+                            const tooltipText = seat.querySelector('.employee-tooltip').textContent;
+                            if (tooltipText.includes('Dept: ' + department)) {{
+                                seat.classList.remove('hidden');
+                            }} else {{
+                                seat.classList.add('hidden');
+                            }}
+                        }});
+                    }}
+                }}
+                
+                // Update calendar based on department filter
+                function updateCalendar(department) {{
+                    // In a real implementation, this would fetch new data
+                    // For now, we'll just highlight that filtering is active
+                    const calendarContainer = document.querySelector('.calendar-container');
+                    
+                    if (department.toLowerCase() === 'all') {{
+                        calendarContainer.style.borderColor = '#9A47AA';
+                    }} else {{
+                        // Change the calendar container border to indicate filtering
+                        calendarContainer.style.borderColor = '#95BBFE';
+                    }}
+                }}
+                
+                // Handle department filter change
+                document.getElementById('departmentFilter').addEventListener('change', function(e) {{
+                    const department = e.target.value;
+                    filterSeats(department);
+                    updateCalendar(department);
+                }});
+                
+                // Initialize
+                document.addEventListener('DOMContentLoaded', function() {{
+                    loadDepartments();
+                }});
+            </script>
             """
         except Exception as e:
             import traceback
