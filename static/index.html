@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seating Planner | Modern Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         :root {
@@ -28,7 +29,7 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Courier Prime', monospace;
             background-color: #f8f9fa;
             color: var(--dark-text);
             line-height: 1.6;
@@ -94,16 +95,78 @@
             color: var(--purple);
         }
 
-        h2:after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: var(--light-blue);
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
+        /* CRITICAL FIX: Remove all decorative h2 underlines */
+        h2::after {
+            display: none !important;
+            content: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+            color: var(--purple);
+        }
+
+        /* Reset all card header styling to ensure consistency */
+        .card-header {
+            background: linear-gradient(135deg, #9A47AA, #668BCC) !important;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 20px !important;
+            border: none !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+
+        /* Reset all h2 styling inside card headers */
+        .card-header h2 {
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 1.8rem !important;
+            font-weight: 600 !important;
+            text-align: center !important;
+            background-clip: initial !important;
+            -webkit-background-clip: initial !important;
+            border: none !important;
+            position: static !important;
+        }
+
+        /* Explicitly target the problematic Upload Employee Data header */
+        .card:first-of-type .card-header h2::after,
+        #downloadContainer .card-header h2::after,
+        #resultsContainer .card-header h2::after {
+            display: none !important;
+            content: none !important;
+        }
+
+        /* Ensure these overrides aren't removed by specificity issues */
+        div.card-header h2,
+        .card div.card-header h2,
+        .card > div.card-header > h2,
+        body .card .card-header h2,
+        body .container .card .card-header h2 {
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            position: static !important;
+        }
+
+        /* Explicitly disable decorative underline for all h2 elements */
+        div.card-header h2::after,
+        .card div.card-header h2::after,
+        .card > div.card-header > h2::after,
+        body .card .card-header h2::after,
+        body .container .card .card-header h2::after {
+            display: none !important;
+            content: none !important;
         }
 
         .card {
@@ -262,32 +325,16 @@
             color: #D32F2F;
         }
 
+        /* Replace the spinner CSS with an image-based spinner */
         .spinner {
             display: none;
             justify-content: center;
             margin: 30px 0;
         }
 
-        .spinner-ring {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-        }
-
-        .spinner-ring:after {
-            content: " ";
-            display: block;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 4px solid var(--purple);
-            border-color: var(--purple) transparent var(--blue) transparent;
-            animation: spinner-ring 1.2s linear infinite;
-        }
-
-        @keyframes spinner-ring {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .spinner img {
+            width: 80px;
+            height: 80px;
         }
 
         .download-container {
@@ -469,6 +516,148 @@
             line-height: 1.6;
             width: 100%;
         }
+
+        /* Force consistent header styling with high specificity */
+        body .container .card .card-header, 
+        body .container .card-header,
+        .card .card-header,
+        .card > .card-header,
+        .card-header {
+            background: linear-gradient(135deg, var(--purple), var(--blue)) !important;
+            padding: 20px !important;
+            color: white !important;
+            border-radius: 20px 20px 0 0 !important;
+        }
+
+        body .card-header h2,
+        .card-header h2 {
+            color: white !important;
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+            -webkit-text-fill-color: white !important;
+            background-clip: initial !important;
+            -webkit-background-clip: initial !important;
+        }
+
+        /* Clean reset for all card headers */
+        .card-header, 
+        div.card-header,
+        body .container .card .card-header {
+            background-image: linear-gradient(135deg, #9A47AA, #668BCC) !important;
+            background: linear-gradient(135deg, #9A47AA, #668BCC) !important;
+            background-color: #9A47AA !important;
+            border-radius: 20px 20px 0 0 !important;
+            padding: 20px !important;
+            color: white !important;
+        }
+
+        /* Reset for all h2 elements in headers */
+        .card-header h2,
+        div.card-header h2,
+        body .container .card .card-header h2 {
+            color: white !important;
+            -webkit-text-fill-color: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            text-decoration: none !important;
+            background: none !important;
+            background-image: none !important;
+        }
+
+        /* Completely remove all ::after pseudo-elements */
+        .card-header h2::after,
+        div.card-header h2::after,
+        body .container .card .card-header h2::after,
+        h2::after {
+            display: none !important;
+            content: none !important;
+            background: none !important;
+            border: none !important;
+            height: 0 !important;
+            width: 0 !important;
+        }
+
+        /* Global font setting to Courier Prime for all elements */
+        * {
+            font-family: 'Courier Prime', monospace;
+        }
+        
+        /* Exception for SitShift logo text */
+        h1 span[style*="Fira Code"] {
+            font-family: 'Fira Code', monospace !important;
+        }
+        
+        /* Make sure all button, input, and other form elements use Courier Prime */
+        button, 
+        input, 
+        select, 
+        textarea, 
+        .btn, 
+        .notification, 
+        .status-message,
+        .upload-help,
+        p,
+        h2, h3, h4, h5, h6,
+        .card-header,
+        footer {
+            font-family: 'Courier Prime', monospace !important;
+        }
+
+        /* Enhanced styling for stats cards */
+        .stats-card {
+            background-color: #668BCC;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 15px rgba(102, 139, 204, 0.2);
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(102, 139, 204, 0.3);
+        }
+        
+        .stats-card h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .stats-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 2px;
+        }
+        
+        .stats-card p {
+            margin: 10px 0;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .stats-container {
+            padding: 10px;
+        }
+        
+        /* Add an icon to the stats card */
+        .stats-card .stats-icon {
+            margin-bottom: 15px;
+            width: 50px;
+            height: 50px;
+        }
     </style>
 </head>
 <body>
@@ -476,9 +665,9 @@
         <header class="animate__animated animate__fadeIn">
             <div class="logo-container">
                 <img src="/static/logo.gif" alt="Seating Planner Logo" class="logo">
-                <h1>Seating Plan Generator</h1>
+                <h1><span style="background: none; -webkit-text-fill-color: #668BCC; font-family: 'Fira Code', monospace; font-weight: normal;">Sit</span><span style="background: none; -webkit-text-fill-color: #95BBFE; font-family: 'Fira Code', monospace; font-weight: normal;">Shift</span></h1>
             </div>
-            <p>Optimize office space and team collaboration with smart seating arrangements</p>
+            <p style="text-align: center; width: 100%;">Smart Office Seating Planner</p>
         </header>
         
         <div class="card animate__animated animate__fadeInUp">
@@ -507,7 +696,7 @@
                 <div id="statusMessage" class="status-message">Processing your file...</div>
                 
                 <div class="spinner" id="spinner">
-                    <div class="spinner-ring"></div>
+                    <img src="/static/loading_image.gif" alt="Loading..." />
                 </div>
             </div>
         </div>
@@ -735,8 +924,18 @@
                         downloadContainer.style.display = 'block';
                         downloadContainer.classList.add('animate__fadeInUp');
                         
-                        // Hide the upload area after successful processing
-                        dropArea.style.display = 'none';
+                        // Add file reset button if needed
+                        // Add file name display to show which file was processed
+                        const fileNameDisplay = document.createElement('div');
+                        fileNameDisplay.className = 'file-processed';
+                        fileNameDisplay.textContent = `File processed: ${file.name}`;
+                        fileNameDisplay.style.marginTop = '10px';
+                        fileNameDisplay.style.fontSize = '14px';
+                        fileNameDisplay.style.color = '#4CAF50';
+                        dropArea.appendChild(fileNameDisplay);
+                        
+                        // Do not hide upload area - IMPORTANT FIX
+                        // REMOVE: dropArea.style.display = 'none';
                         
                         // Fetch and display visualization
                         const visResponse = await fetch('/visualize');
@@ -786,6 +985,9 @@
                     showNotification('Error uploading file', 'error');
                 } finally {
                     spinner.style.display = 'none';
+                    
+                    // Make sure headers have consistent styling
+                    fixHeaderStyles();
                 }
             }
             
@@ -800,12 +1002,19 @@
                         if (departments.length > 0) {
                             let statsHTML = '<div class="stats-container">';
                             
-                            // Instead of department breakdown, show a general summary
+                            // Modern styled stats card
                             statsHTML += `
                                 <div class="stats-card">
+                                    <svg class="stats-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 3v18h18"></path>
+                                        <path d="M18 17V9"></path>
+                                        <path d="M13 17V5"></path>
+                                        <path d="M8 17v-3"></path>
+                                    </svg>
                                     <h3>Seating Plan Summary</h3>
-                                    <p>Total departments: ${departments.length}</p>
-                                    <p>Floor allocation complete</p>
+                                    <p><strong>Total departments:</strong> ${departments.length}</p>
+                                    <p><strong>Floor allocation:</strong> Complete</p>
+                                    <p><strong>Status:</strong> Ready for deployment</p>
                                 </div>
                             `;
                             
@@ -879,6 +1088,110 @@
                     window.dispatchEvent(new Event('resize'));
                 }, 500);
             }
+            
+            // Function to ensure all headers have consistent styling
+            function fixHeaderStyles() {
+                document.querySelectorAll('.card-header').forEach(header => {
+                    header.style.background = 'linear-gradient(135deg, #9A47AA, #668BCC)';
+                    header.style.color = 'white';
+                    header.style.padding = '20px';
+                    header.style.borderRadius = '20px 20px 0 0';
+                    
+                    const h2 = header.querySelector('h2');
+                    if (h2) {
+                        h2.style.color = 'white';
+                        h2.style.webkitTextFillColor = 'white';
+                        h2.style.marginBottom = '0';
+                        h2.style.paddingBottom = '0';
+                    }
+                });
+            }
+            
+            // Call this once at page load to ensure initial consistency
+            fixHeaderStyles();
+        });
+        
+        // Create a function to radically fix header styles
+        function permanentlyFixHeaderStyles() {
+            // First remove all styles from h2::after
+            const styleSheet = document.createElement('style');
+            styleSheet.textContent = `
+                h2::after, .card-header h2::after {
+                    display: none !important;
+                    content: none !important;
+                    background: transparent !important;
+                    width: 0 !important;
+                    height: 0 !important;
+                }
+                
+                .card-header {
+                    background: linear-gradient(135deg, #9A47AA, #668BCC) !important;
+                    border-radius: 20px 20px 0 0 !important;
+                }
+                
+                .card-header h2 {
+                    color: white !important;
+                    -webkit-text-fill-color: white !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    text-decoration: none !important;
+                    border: none !important;
+                }
+            `;
+            document.head.appendChild(styleSheet);
+            
+            // Direct DOM manipulation to force styles
+            document.querySelectorAll('.card-header').forEach(header => {
+                header.style.setProperty('background', 'linear-gradient(135deg, #9A47AA, #668BCC)', 'important');
+                
+                const h2 = header.querySelector('h2');
+                if (h2) {
+                    // Remove any after element that might be causing the blue underline
+                    const style = window.getComputedStyle(h2, '::after');
+                    if (style) {
+                        h2.style.setProperty('border-bottom', 'none', 'important');
+                        h2.style.setProperty('text-decoration', 'none', 'important');
+                    }
+                    
+                    h2.style.setProperty('color', 'white', 'important');
+                    h2.style.setProperty('-webkit-text-fill-color', 'white', 'important');
+                    h2.style.setProperty('margin', '0', 'important');
+                    h2.style.setProperty('padding', '0', 'important');
+                    h2.style.setProperty('background-clip', 'initial', 'important');
+                    h2.style.setProperty('-webkit-background-clip', 'initial', 'important');
+                }
+            });
+        }
+        
+        // Apply the permanent fix on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply our radical fix at startup
+            permanentlyFixHeaderStyles();
+            
+            // And after a small delay to make sure it takes effect
+            setTimeout(permanentlyFixHeaderStyles, 100);
+            
+            // Fix after file upload too
+            fileInput.addEventListener('change', function() {
+                // Apply fix after file is selected
+                setTimeout(permanentlyFixHeaderStyles, 500);
+            });
+        });
+        
+        // Watch for DOM changes and fix styles
+        const observer = new MutationObserver(function() {
+            permanentlyFixHeaderStyles();
+        });
+        
+        // Start observing after DOM is fully loaded
+        window.addEventListener('load', function() {
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+            
+            // One more apply of our fix
+            permanentlyFixHeaderStyles();
         });
     </script>
 </body>
