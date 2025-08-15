@@ -3,388 +3,881 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seating Planner</title>
-    <!-- Add Courier Prime font -->
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <title>Seating Planner | Modern Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        body {
-            font-family: 'Courier Prime', monospace;
+        :root {
+            --purple: #9A47AA;
+            --light-purple: #b76ac5;
+            --grey: #D9D9D9;
+            --light-blue: #95BBFE;
+            --blue: #668BCC;
+            --dark-text: #333;
+            --light-text: #fff;
+            --gradient: linear-gradient(135deg, var(--purple), var(--blue));
+            --gradient-hover: linear-gradient(135deg, var(--blue), var(--purple));
+            --box-shadow: 0 8px 20px rgba(154, 71, 170, 0.15);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
             position: relative;
-            background-color: #D9D9D9; /* Fallback if video doesn't load */
+            overflow-x: hidden;
         }
-        
-        /* Video background */
-        .video-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
+
+        /* Remove the rectangular background pattern */
+        .background-pattern {
+            display: none; /* Hide the background pattern div */
         }
-        
-        .video-background video {
-            position: absolute;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            opacity: 0.85; /* Makes video more subtle */
-        }
-        
-        /* Overlay to make content more readable */
-        .video-background::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(217, 217, 217, 0.3); /* Semi-transparent layer */
-        }
-        
+
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.92);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            position: relative; /* Ensure content is above the video */
+            padding: 40px 20px;
         }
-        
-        .header {
+
+        header {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
+            justify-content: space-between;
+            margin-bottom: 50px;
+            background: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
         }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
         .logo {
-            height: 213px; /* 2/3 of the previous 320px */
+            height: 80px;
             margin-right: 20px;
+            animation: pulse 2s infinite alternate;
         }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
         h1 {
-            margin: 0;
-            color: #668BCC;
-            font-size: 2.5em;
-            align-self: center;
-        }
-        h2 {
-            font-family: 'Courier Prime', monospace;
+            font-size: 2.2rem;
             font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
         }
-        .card {
-            background: #FFFFFF;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(102, 139, 204, 0.2);
-            padding: 30px;
-            margin-bottom: 20px;
-            border-top: 4px solid #95BBFE;
-        }
-        .upload-form {
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
             text-align: center;
+            position: relative;
+            padding-bottom: 10px;
+            color: var(--purple);
         }
+
+        h2:after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: var(--light-blue);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 40px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(154, 71, 170, 0.2);
+        }
+
+        /* Ensure all card headers maintain white text on gradient background */
+        .card-header {
+            background: var(--gradient);
+            padding: 20px;
+            color: var(--light-text);
+        }
+
+        .card-header h2 {
+            color: white !important; /* Force white color for all headers */
+            margin-bottom: 0;
+            -webkit-text-fill-color: white; /* Override any background-clip effects */
+            background-clip: initial;
+            -webkit-background-clip: initial;
+        }
+
+        /* Make sure text stays white in all states */
+        .animate__fadeInUp .card-header h2 {
+            color: white !important;
+            -webkit-text-fill-color: white;
+        }
+
+        /* Ensure consistent gradient background across all states */
+        .download-container .card-header,
+        .results-container .card-header {
+            background: var(--gradient);
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            border: 2px dashed var(--light-blue);
+            border-radius: 15px;
+            margin: 20px 0;
+            transition: var(--transition);
+            background: rgba(149, 187, 254, 0.05);
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--purple);
+            background: rgba(154, 71, 170, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--blue);
+            width: 40px;
+            height: 40px;
+        }
+
         .file-input {
             display: none;
         }
-        .file-label {
+
+        .btn {
             display: inline-flex;
             align-items: center;
-            background: linear-gradient(135deg, #95BBFE, #668BCC);
+            justify-content: center;
+            padding: 10px 20px;
+            background: var(--gradient);
             color: white;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
             border: none;
-            box-shadow: 0 2px 5px rgba(102, 139, 204, 0.4);
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(154, 71, 170, 0.2);
+            text-decoration: none;
+            gap: 8px;
+            min-width: 160px;
+            text-align: center;
+            margin: 8px;
         }
-        .file-label:hover {
-            background: linear-gradient(135deg, #668BCC, #95BBFE);
+
+        .btn:hover {
+            background: var(--gradient-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(102, 139, 204, 0.5);
+            box-shadow: 0 6px 20px rgba(102, 139, 204, 0.4);
         }
-        .status-message {
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn.download {
+            background: var(--gradient);
+        }
+
+        .btn.calendar {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        }
+
+        .btn.calendar:hover {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .upload-help {
+            font-size: 14px;
+            color: #888;
             margin-top: 15px;
-            color: #668BCC;
+            text-align: center;
         }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background-color: rgba(149, 187, 254, 0.1);
+            border-left: 4px solid var(--light-blue);
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-message.success {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left-color: #4CAF50;
+            color: #2E7D32;
+        }
+
+        .status-message.error {
+            background-color: rgba(244, 67, 54, 0.1);
+            border-left-color: #F44336;
+            color: #D32F2F;
+        }
+
         .spinner {
             display: none;
             justify-content: center;
             margin: 30px 0;
         }
-        .spinner-outer {
+
+        .spinner-ring {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+        }
+
+        .spinner-ring:after {
+            content: " ";
+            display: block;
             width: 40px;
             height: 40px;
-            position: relative;
-        }
-        .spinner-wheel {
-            border: 4px solid rgba(149, 187, 254, 0.3);
             border-radius: 50%;
-            border-top: 4px solid #668BCC;
-            width: 100%;
-            height: 100%;
-            animation: spin 1s linear infinite;
+            border: 4px solid var(--purple);
+            border-color: var(--purple) transparent var(--blue) transparent;
+            animation: spinner-ring 1.2s linear infinite;
         }
-        @keyframes spin {
+
+        @keyframes spinner-ring {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .download-link {
-            display: none; /* Set initial state to none */
+
+        .download-container {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .results-container {
+            display: none;
+            margin-top: 30px;
+            opacity: 1;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        #floorPlansContent {
+            min-height: 300px;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        /* Make sure the calendar container and floor plans don't get hidden */
+        #floorPlansContent .calendar-container,
+        #floorPlansContent .floor-plot-container {
+            display: block !important;
+            width: 100%;
+        }
+
+        /* Ensure proper rendering of visualization elements */
+        .tab-content.active {
+            display: block;
+            width: 100%;
+        }
+
+        /* Add a wrapper to ensure content doesn't overflow */
+        .visualization-wrapper {
+            overflow-x: auto;
+            width: 100%;
+        }
+        
+        footer {
+            margin-top: 60px;
+            background: var(--gradient);
+            color: white;
             text-align: center;
-            margin: 20px 0;
-            justify-content: center;
-            gap: 15px;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            font-size: 14px;
         }
-        .download-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #9A47AA, #8A3D99);
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(154, 71, 170, 0.4);
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 20px;
+            }
+            
+            .logo-container {
+                margin-bottom: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                text-align: center;
+            }
+            
+            .upload-area {
+                padding: 30px 15px;
+            }
+            
+            .feature-highlight {
+                flex-direction: column;
+            }
         }
-        .download-button:hover {
-            background: linear-gradient(135deg, #8A3D99, #9A47AA);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(154, 71, 170, 0.5);
-        }
-        .floor-plans {
-            display: none;
-        }
-        
-        /* New styles for filters and features */
-        .features-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            display: none;
-        }
-        
-        .filter-container {
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
             background: white;
-            border-radius: 4px;
-            padding: 10px 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--blue);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+            transform: translateX(120%);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: #4CAF50;
+        }
+
+        .notification.error {
+            border-left-color: #F44336;
+        }
+
+        .notification .close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
+        }
+
+        .feature-highlight {
             display: flex;
+            justify-content: space-around;
+            margin: 50px 0;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .feature {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            padding: 25px;
+            text-align: center;
+            margin: 15px;
+            background: var(--gradient);
+            border-radius: 15px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
             align-items: center;
-        }
-        
-        .filter-label {
-            margin-right: 10px;
-            color: #668BCC;
-            font-weight: bold;
-        }
-        
-        .filter-select {
-            padding: 8px 12px;
-            border: 2px solid #95BBFE;
-            border-radius: 4px;
-            font-family: 'Courier Prime', monospace;
-            background-color: white;
-        }
-        
-        .calendar-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
             color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.4);
         }
-        
-        .calendar-button:hover {
-            background: linear-gradient(135deg, #2E7D32, #4CAF50);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.5);
+
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(154, 71, 170, 0.3);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            stroke: white;
+            fill: none;
+        }
+
+        .feature h3 {
+            margin-bottom: 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            width: 100%;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .feature h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            opacity: 0.8;
+        }
+
+        .feature p {
+            color: white;
+            font-size: 15px;
+            line-height: 1.6;
+            width: 100%;
         }
     </style>
 </head>
 <body>
-    <!-- Add video background element -->
-    <div class="video-background">
-        <video autoplay muted loop playsinline>
-            <source src="/static/background.mp4" type="video/mp4">
-            <!-- Fallback message if video cannot be played -->
-            Your browser does not support background videos.
-        </video>
-    </div>
-
     <div class="container">
-        <header class="header">
-            <img src="/static/logo.gif" alt="Seating Planner Logo" class="logo">
-            <h1>Seating Plan Generator</h1>
+        <header class="animate__animated animate__fadeIn">
+            <div class="logo-container">
+                <img src="/static/logo.gif" alt="Seating Planner Logo" class="logo">
+                <h1>Seating Plan Generator</h1>
+            </div>
+            <p>Optimize office space and team collaboration with smart seating arrangements</p>
         </header>
-
-        <div class="card">
-            <div class="upload-form">
-                <input type="file" id="fileInput" class="file-input" accept=".csv">
-                <label for="fileInput" class="file-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        
+        <div class="card animate__animated animate__fadeInUp">
+            <div class="card-header">
+                <h2>Upload Employee Data</h2>
+            </div>
+            <div class="card-body">
+                <div class="upload-area" id="dropArea">
+                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    Choose CSV File
-                </label>
-                <div id="fileName" class="status-message"></div>
-            </div>
-        </div>
-
-        <div id="spinner" class="spinner">
-            <div class="spinner-outer">
-                <div class="spinner-wheel"></div>
-            </div>
-        </div>
-
-        <div id="downloadLink" class="download-link">
-            <a href="#" class="download-button" id="downloadButton">Download Seating Plan</a>
-            <a href="https://calendar.google.com/" target="_blank" class="calendar-button" id="calendarButton">Save to Google Calendar</a>
-        </div>
-
-        <div id="floorPlans" class="floor-plans">
-            <h2>Interactive Floor Plans</h2>
-            <div class="features-bar" id="featuresBar">
-                <div class="filter-container">
-                    <label class="filter-label">Filter by Department:</label>
-                    <select id="mainDepartmentFilter" class="filter-select">
-                        <option value="All">All Departments</option>
-                        <!-- Will be populated dynamically -->
-                    </select>
+                    <input type="file" id="fileInput" class="file-input" accept=".csv">
+                    <button class="btn" id="uploadBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Upload CSV File
+                    </button>
+                    <p class="upload-help">Drag and drop your CSV file or click to browse</p>
+                </div>
+                
+                <div id="statusMessage" class="status-message">Processing your file...</div>
+                
+                <div class="spinner" id="spinner">
+                    <div class="spinner-ring"></div>
                 </div>
             </div>
-            <div id="floorPlansContent"></div>
+        </div>
+        
+        <div id="downloadContainer" class="card download-container animate__animated animate__fadeInUp">
+            <div class="card-header">
+                <h2>Download & Calendar</h2>
+            </div>
+            <div class="card-body">
+                <div class="action-buttons">
+                    <a href="#" class="btn download" id="downloadButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Seating Plan
+                    </a>
+                    <a href="https://calendar.google.com/" target="_blank" class="btn calendar" id="calendarButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Save to Google Calendar
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div id="resultsContainer" class="card results-container animate__animated animate__fadeInUp">
+            <div class="card-header">
+                <h2>Seating Plan Results</h2>
+            </div>
+            <div class="card-body">
+                
+                <div class="tab-content active" id="visualization">
+                    <div id="floorPlansContent"></div>
+                </div>
+                
+                <div class="tab-content" id="stats">
+                    <div id="statsContent">
+                        <p>Statistical information about the seating plan will appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="feature-highlight">
+            <div class="feature animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
+                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+                <h3>Smart Assignment</h3>
+                <p>Our algorithm assigns seats strategically to optimize team collaboration and workspace utilization</p>
+            </div>
+            
+            <div class="feature animate__animated animate__fadeInUp" style="animation-delay: 0.4s">
+                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <h3>Department Grouping</h3>
+                <p>Keep teams together to enhance communication and productivity</p>
+            </div>
+            
+            <div class="feature animate__animated animate__fadeInUp" style="animation-delay: 0.6s">
+                <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <h3>Calendar Integration</h3>
+                <p>Seamlessly integrate your seating schedules with your calendar system</p>
+            </div>
+        </div>
+        
+        <div class="notification" id="notification">
+            <span class="close" id="notificationClose">×</span>
+            <div id="notificationContent"></div>
         </div>
     </div>
-
+    
+    <footer>
+        <p>&copy; 2023 Seating Planner | Modern Office Solutions</p>
+    </footer>
+    
     <script>
-        // Handle file upload
-        document.getElementById('fileInput').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const dropArea = document.getElementById('dropArea');
+            const statusMessage = document.getElementById('statusMessage');
+            const spinner = document.getElementById('spinner');
+            const downloadContainer = document.getElementById('downloadContainer');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const downloadButton = document.getElementById('downloadButton');
+            const floorPlansContent = document.getElementById('floorPlansContent');
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const notification = document.getElementById('notification');
+            const notificationContent = document.getElementById('notificationContent');
+            const notificationClose = document.getElementById('notificationClose');
             
-            // Update UI
-            document.getElementById('fileName').textContent = `Selected file: ${file.name}`;
-            document.getElementById('spinner').style.display = 'flex';
-            document.getElementById('downloadLink').style.display = 'none'; // Ensure it's hidden during upload
-            document.getElementById('floorPlans').style.display = 'none';
-            document.getElementById('floorPlansContent').innerHTML = '';
-            document.getElementById('featuresBar').style.display = 'none';
+            // Handle file upload via button click
+            uploadBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
             
-            const formData = new FormData();
-            formData.append('file', file);
+            // Handle file selection
+            fileInput.addEventListener('change', handleFileUpload);
             
-            try {
-                const uploadPromise = fetch('/upload', {
-                    method: 'POST',
-                    body: formData
-                }).then(response => response.json());
+            // Handle drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                dropArea.classList.remove('dragover');
+            }
+            
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
                 
-                const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
-                
-                const [data] = await Promise.all([uploadPromise, delayPromise]);
-                
-                if (data.filename) {
-                    document.getElementById('downloadButton').href = `/download/${data.filename}`;
-                    document.getElementById('downloadLink').style.display = 'flex'; // Set to flex here
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileUpload();
+                }
+            }
+            
+            // Handle tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
                     
-                    const visResponse = await fetch('/visualize');
-                    if (visResponse.ok) {
-                        const visHTML = await visResponse.text();
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Notification functions
+            function showNotification(message, type = 'info') {
+                notificationContent.textContent = message;
+                notification.className = `notification ${type} show`;
+                
+                setTimeout(() => {
+                    hideNotification();
+                }, 5000);
+            }
+            
+            function hideNotification() {
+                notification.classList.remove('show');
+            }
+            
+            notificationClose.addEventListener('click', hideNotification);
+            
+            // Handle file upload
+            async function handleFileUpload() {
+                const file = fileInput.files[0];
+                if (!file) return;
+                
+                // Check if file is a CSV
+                if (!file.name.toLowerCase().endsWith('.csv')) {
+                    showNotification('Please upload a CSV file', 'error');
+                    return;
+                }
+                
+                // Update UI
+                statusMessage.textContent = `Processing: ${file.name}`;
+                statusMessage.style.display = 'block';
+                statusMessage.className = 'status-message';
+                spinner.style.display = 'flex';
+                downloadContainer.style.display = 'none';
+                resultsContainer.style.display = 'none';
+                floorPlansContent.innerHTML = '';
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    // Upload file
+                    const uploadPromise = fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => response.json());
+                    
+                    // Add a slight delay for UX
+                    const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
+                    
+                    const [data] = await Promise.all([uploadPromise, delayPromise]);
+                    
+                    if (data.filename) {
+                        statusMessage.textContent = 'Seating plan generated successfully!';
+                        statusMessage.className = 'status-message success';
+                        downloadButton.href = `/download/${data.filename}`;
+                        downloadContainer.style.display = 'block';
+                        downloadContainer.classList.add('animate__fadeInUp');
                         
-                        if (!visHTML.includes('No seating plan available')) {
-                            document.getElementById('floorPlansContent').innerHTML = visHTML;
-                            document.getElementById('floorPlans').style.display = 'block';
-                            document.getElementById('featuresBar').style.display = 'flex';
+                        // Hide the upload area after successful processing
+                        dropArea.style.display = 'none';
+                        
+                        // Fetch and display visualization
+                        const visResponse = await fetch('/visualize');
+                        if (visResponse.ok) {
+                            const visHTML = await visResponse.text();
                             
-                            // Load departments for filter
-                            loadMainDepartments();
+                            if (!visHTML.includes('No seating plan available')) {
+                                // Wrap the visualization content in a container for better display
+                                floorPlansContent.innerHTML = '<div class="visualization-wrapper">' + visHTML + '</div>';
+                                
+                                // Fix any embedded styles in the visualization
+                                fixVisualizationStyles();
+                                
+                                // Show the results container
+                                resultsContainer.style.display = 'block';
+                                
+                                // Force a repaint to ensure everything renders properly
+                                setTimeout(() => {
+                                    resultsContainer.style.display = 'none';
+                                    void resultsContainer.offsetHeight; // Force a repaint
+                                    resultsContainer.style.display = 'block';
+                                    resultsContainer.classList.add('animate__fadeInUp');
+                                }, 100);
+                                
+                                // Generate simple stats
+                                generateStats();
+                                
+                                // Scroll to results with a small delay to ensure rendering
+                                setTimeout(() => {
+                                    resultsContainer.scrollIntoView({behavior: 'smooth'});
+                                }, 800);
+                                
+                                showNotification('Seating plan created successfully!', 'success');
+                            } else {
+                                showNotification('Could not generate visualization', 'error');
+                            }
+                        }
+                    } else {
+                        statusMessage.textContent = data.error || 'Error generating seating plan';
+                        statusMessage.className = 'status-message error';
+                        showNotification('Error processing file', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    statusMessage.textContent = 'Error processing file: ' + error.message;
+                    statusMessage.className = 'status-message error';
+                    showNotification('Error uploading file', 'error');
+                } finally {
+                    spinner.style.display = 'none';
+                }
+            }
+            
+            // Generate stats about the seating plan
+            async function generateStats() {
+                try {
+                    const deptResponse = await fetch('/departments');
+                    if (deptResponse.ok) {
+                        const deptData = await deptResponse.json();
+                        const departments = deptData.departments || [];
+                        
+                        if (departments.length > 0) {
+                            let statsHTML = '<div class="stats-container">';
                             
-                            setTimeout(() => {
-                                window.dispatchEvent(new Event('resize'));
-                            }, 300);
+                            // Instead of department breakdown, show a general summary
+                            statsHTML += `
+                                <div class="stats-card">
+                                    <h3>Seating Plan Summary</h3>
+                                    <p>Total departments: ${departments.length}</p>
+                                    <p>Floor allocation complete</p>
+                                </div>
+                            `;
+                            
+                            statsHTML += '</div>';
+                            
+                            document.getElementById('statsContent').innerHTML = statsHTML;
                         }
                     }
-                } else {
-                    document.getElementById('fileName').textContent = data.error || 'Error generating seating plan';
+                } catch (error) {
+                    console.error('Error loading stats:', error);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('fileName').textContent = 'Error processing file: ' + error.message;
-            } finally {
-                document.getElementById('spinner').style.display = 'none';
             }
-        });
-        
-        // Load departments for main filter
-        async function loadMainDepartments() {
-            try {
-                const response = await fetch('/departments');
-                const data = await response.json();
-                const select = document.getElementById('mainDepartmentFilter');
-                
-                // Clear existing options except the first one
-                while (select.options.length > 1) {
-                    select.remove(1);
-                }
-                
-                if (data.departments && data.departments.length) {
-                    data.departments.forEach(dept => {
-                        const option = document.createElement('option');
-                        option.value = dept;
-                        option.textContent = dept;
-                        select.appendChild(option);
-                    });
-                }
-            } catch (error) {
-                console.error('Error loading departments:', error);
-            }
-        }
-        
-        // Handle main department filter change
-        document.getElementById('mainDepartmentFilter').addEventListener('change', async function(e) {
-            const department = e.target.value;
             
-            // Pass the filter value to the iframe content if it exists
-            const content = document.getElementById('floorPlansContent');
-            if (content) {
-                const filterSelect = content.querySelector('#departmentFilter');
-                if (filterSelect) {
-                    filterSelect.value = department;
+            // Function to fix any styling issues in the visualization content
+            function fixVisualizationStyles() {
+                // Give a small timeout to allow the DOM to update
+                setTimeout(() => {
+                    // Make sure all calendar containers are visible
+                    const calendarContainers = document.querySelectorAll('.calendar-container');
+                    calendarContainers.forEach(container => {
+                        container.style.display = 'block';
+                        container.style.width = '100%';
+                        container.style.overflowX = 'auto';
+                    });
                     
-                    // Trigger the change event
-                    const event = new Event('change');
-                    filterSelect.dispatchEvent(event);
-                } else {
-                    // If the filter doesn't exist in the iframe content yet,
-                    // we need to reload the visualization with the filter
-                    const visResponse = await fetch('/visualize');
-                    if (visResponse.ok) {
-                        content.innerHTML = await visResponse.text();
+                    // Make sure all floor plot containers are visible
+                    const floorPlots = document.querySelectorAll('.floor-plot-container');
+                    floorPlots.forEach(plot => {
+                        plot.style.display = 'block';
+                        plot.style.width = '100%';
+                        plot.style.overflowX = 'auto';
+                    });
+                    
+                    // Remove department legends at the bottom of floor plots
+                    const legends = document.querySelectorAll('.floor-plot-container .legend');
+                    legends.forEach(legend => {
+                        legend.style.display = 'none';
+                    });
+                    
+                    // Remove the Department Breakdown section from the Stats tab
+                    const statsCard = document.querySelectorAll('.stats-card');
+                    statsCard.forEach(card => {
+                        if (card.querySelector('h3') && card.querySelector('h3').textContent === 'Department Breakdown') {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    // Additionally, look for any list of departments that might be rendered directly in the visualization
+                    document.querySelectorAll('ul').forEach(ul => {
+                        const listItems = Array.from(ul.querySelectorAll('li'));
                         
-                        // Now try to find the filter and set its value
-                        setTimeout(() => {
-                            const newFilterSelect = content.querySelector('#departmentFilter');
-                            if (newFilterSelect) {
-                                newFilterSelect.value = department;
-                                newFilterSelect.dispatchEvent(new Event('change'));
+                        // If we have a list that seems to contain a lot of department codes (3 letter codes)
+                        if (listItems.length > 10 && 
+                            listItems.every(li => li.textContent.trim().length <= 3)) {
+                            const parent = ul.parentElement;
+                            if (parent) {
+                                // Hide the entire parent element that contains the department list
+                                parent.style.display = 'none';
                             }
-                        }, 100);
-                    }
-                }
+                        }
+                    });
+                    
+                    // Check for department breakdown text in paragraph elements
+                    document.querySelectorAll('p').forEach(p => {
+                        if (p.textContent.includes('Total Departments:')) {
+                            p.style.display = 'none';
+                        }
+                    });
+                    
+                    // Dispatch a resize event to make sure all elements recalculate their dimensions
+                    window.dispatchEvent(new Event('resize'));
+                }, 500);
             }
         });
     </script>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seating Planner</title>
+    <!-- Add Courier Prime font -->
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Courier Prime', monospace;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            position: relative;
+            background-color: #D9D9D9; /* Fallback if video doesn't load */
+        }
+        
+        /* Video background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .video-background video {
+            position: absolute;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            opacity: 0.85; /* Makes video more subtle */
+        }
+        
+        /* Overlay to make content more readable */
+        .video-background::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(217, 217, 217, 0.3); /* Semi-transparent layer */
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.92);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            position: relative; /* Ensure content is above the video */
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            height: 213px; /* 2/3 of the previous 320px */
+            margin-right: 20px;
+        }
+        h1 {
+            margin: 0;
+            color: #668BCC;
+            font-size: 2.5em;
+            align-self: center;
+        }
+        h2 {
+            font-family: 'Courier Prime', monospace;
+            font-weight: 700;
+        }
+        .card {
+            background: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(102, 139, 204, 0.2);
+            padding: 30px;
+            margin-bottom: 20px;
+            border-top: 4px solid #95BBFE;
+        }
+        .upload-form {
+            text-align: center;
+        }
+        .file-input {
+            display: none;
+        }
+        .file-label {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #95BBFE, #668BCC);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 5px rgba(102, 139, 204, 0.4);
+        }
+        .file-label:hover {
+            background: linear-gradient(135deg, #668BCC, #95BBFE);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 139, 204, 0.5);
+        }
+        .status-message {
+            margin-top: 15px;
+            color: #668BCC;
+        }
+        .spinner {
+            display: none;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        .spinner-outer {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+        .spinner-wheel {
+            border: 4px solid rgba(149, 187, 254, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #668BCC;
+            width: 100%;
+            height: 100%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .download-link {
+            display: none; /* Set initial state to none */
+            text-align: center;
+            margin: 20px 0;
+            justify-content: center;
+            gap: 15px;
+        }
+        .download-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #9A47AA, #8A3D99);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(154, 71, 170, 0.4);
+        }
+        .download-button:hover {
+            background: linear-gradient(135deg, #8A3D99, #9A47AA);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(154, 71, 170, 0.5);
+        }
+        .floor-plans {
+            display: none;
+        }
+        
+        /* New styles for filters and features */
+        .features-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .filter-container {
+            background: white;
+            border-radius: 4px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-label {
+            margin-right: 10px;
+            color: #668BCC;
+            font-weight: bold;
+        }
+        
+        .filter-select {
+            padding: 8px 12px;
+            border: 2px solid #95BBFE;
+            border-radius: 4px;
+            font-family: 'Courier Prime', monospace;
+            background-color: white;
+        }
+        
+        .calendar-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.4);
+        }
+        
+        .calendar-button:hover {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Add video background element -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="/static/background.mp4" type="video/mp4">
+            <!-- Fallback message if video cannot be played -->
+            Your browser does not support background videos.
+        </video>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <img src="/static/logo.gif" alt="Seating Planner Logo" class="logo">
+            <h1>Seating Plan Generator</h1>
+        </header>
+
+        <div class="card">
+            <div class="upload-form">
+                <input type="file" id="fileInput" class="file-input" accept=".csv">
+                <label for="fileInput" class="file-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Choose CSV File
+                </label>
+                <div id="fileName" class="status-message"></div>
+            </div>
+        </div>
+
+        <div id="spinner" class="spinner">
+            <div class="spinner-outer">
+                <div class="spinner-wheel"></div>
+            </div>
+        </div>
+
+        <div id="downloadLink" class="download-link">
+            <a href="#" class="download-button" id="downloadButton">Download Seating Plan</a>
+            <a href="https://calendar.google.com/" target="_blank" class="calendar-button" id="calendarButton">Save to Google Calendar</a>
+        </div>
+
+        <div id="floorPlans" class="floor-plans">
+            <h2>Interactive Floor Plans</h2>
+            <div class="features-bar" id="featuresBar">
+                <div class="filter-container">
+                    <label class="filter-label">Filter by Department:</label>
+                    <select id="mainDepartmentFilter" class="filter-select">
+                        <option value="All">All Departments</option>
+                        <!-- Will be populated dynamically -->
+                    </select>
+                </div>
+            </div>
+            <div id="floorPlansContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Handle file upload
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Update UI
+            document.getElementById('fileName').textContent = `Selected file: ${file.name}`;
+            document.getElementById('spinner').style.display = 'flex';
+            document.getElementById('downloadLink').style.display = 'none'; // Ensure it's hidden during upload
+            document.getElementById('floorPlans').style.display = 'none';
+            document.getElementById('floorPlansContent').innerHTML = '';
+            document.getElementById('featuresBar').style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const uploadPromise = fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json());
+                
+                const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
+                
+                const [data] = await Promise.all([uploadPromise, delayPromise]);
+                
+                if (data.filename) {
+                    document.getElementById('downloadButton').href = `/download/${data.filename}`;
+                    document.getElementById('downloadLink').style.display = 'flex'; // Set to flex here
+                    
+                    const visResponse = await fetch('/visualize');
+                    if (visResponse.ok) {
+                        const visHTML = await visResponse.text();
+                        
+                        if (!visHTML.includes('No seating plan available')) {
+                            document.getElementById('floorPlansContent').innerHTML = visHTML;
+                            document.getElementById('floorPlans').style.display = 'block';
+                            document.getElementById('featuresBar').style.display = 'flex';
+                            
+                            // Load departments for filter
+                            loadMainDepartments();
+                            
+                            setTimeout(() => {
+                                window.dispatchEvent(new Event('resize'));
+                            }, 300);
+                        }
+                    }
+                } else {
+                    document.getElementById('fileName').textContent = data.error || 'Error generating seating plan';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('fileName').textContent = 'Error processing file: ' + error.message;
+            } finally {
+                document.getElementById('spinner').style.display = 'none';
+            }
+        });
+        
+        // Load departments for main filter
+        async function loadMainDepartments() {
+            try {
+                const response = await fetch('/departments');
+                const data = await response.json();
+                const select = document.getElementById('mainDepartmentFilter');
+                
+                // Clear existing options except the first one
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+                
+                if (data.departments && data.departments.length) {
+                    data.departments.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept;
+                        option.textContent = dept;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading departments:', error);
+            }
+        }
+        
+        // Handle main department filter change
+        document.getElementById('mainDepartmentFilter').addEventListener('change', async function(e) {
+            const department = e.target.value;
+            
+            // Pass the filter value to the iframe content if it exists
+            const content = document.getElementById('floorPlansContent');
+            if (content) {
+                const filterSelect = content.querySelector('#departmentFilter');
+                if (filterSelect) {
+                    filterSelect.value = department;
+                    
+                    // Trigger the change event
+                    const event = new Event('change');
+                    filterSelect.dispatchEvent(event);
+                } else {
+                    // If the filter doesn't exist in the iframe content yet,
+                    // we need to reload the visualization with the filter
+                    const visResponse = await fetch('/visualize');
+                    if (visResponse.ok) {
+                        content.innerHTML = await visResponse.text();
+                        
+                        // Now try to find the filter and set its value
+                        setTimeout(() => {
+                            const newFilterSelect = content.querySelector('#departmentFilter');
+                            if (newFilterSelect) {
+                                newFilterSelect.value = department;
+                                newFilterSelect.dispatchEvent(new Event('change'));
+                            }
+                        }, 100);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
