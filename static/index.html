@@ -281,12 +281,13 @@
             background: var(--gradient);
         }
 
+        /* Update calendar button to match download button with gradient using #668BCC */
         .btn.calendar {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            background: linear-gradient(135deg, #668BCC, #95BBFE);
         }
 
         .btn.calendar:hover {
-            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            background: linear-gradient(135deg, #95BBFE, #668BCC);
         }
 
         .action-buttons {
@@ -658,6 +659,148 @@
             width: 50px;
             height: 50px;
         }
+
+        /* Calendar event dialog styles */
+    .events-dialog {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        animation: fadeIn 0.3s;
+    }
+    
+    .events-dialog-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        font-family: 'Courier Prime', monospace;
+        animation: slideIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .close-dialog {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    
+    .close-dialog:hover {
+        color: #668BCC;
+    }
+    
+    .event-links {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 20px;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .calendar-event-link {
+        display: block;
+        padding: 15px;
+        background: linear-gradient(135deg, rgba(149, 187, 254, 0.1), rgba(255, 255, 255, 0.9));
+        border-radius: 8px;
+        text-decoration: none;
+        color: #333;
+        border-left: 3px solid #95BBFE;
+        min-width: 110px;
+        text-align: center;
+        transition: all 0.2s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .calendar-event-link:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 10px rgba(102, 139, 204, 0.2);
+        background: linear-gradient(135deg, rgba(149, 187, 254, 0.2), rgba(255, 255, 255, 1));
+    }
+    
+    .calendar-event-link:nth-child(even) {
+        border-left: 3px solid #9A47AA;
+        background: linear-gradient(135deg, rgba(154, 71, 170, 0.1), rgba(255, 255, 255, 0.9));
+    }
+    
+    .calendar-event-link:nth-child(even):hover {
+        background: linear-gradient(135deg, rgba(154, 71, 170, 0.2), rgba(255, 255, 255, 1));
+    }
+    
+    .event-day {
+        font-weight: bold;
+        color: #668BCC;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+    
+    .calendar-event-link:nth-child(even) .event-day {
+        color: #9A47AA;
+    }
+    
+    .event-date {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .event-location {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+    
+    .events-dialog h3 {
+        margin-top: 0;
+        color: #668BCC;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+
+    /* Styles for Save All button */
+    .save-all-container {
+        margin-top: 20px;
+        text-align: center;
+        padding-top: 15px;
+        border-top: 1px dashed #ddd;
+    }
+    
+    .save-all-btn {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #668BCC, #95BBFE);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-family: 'Courier Prime', monospace;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 4px 12px rgba(102, 139, 204, 0.2);
+    }
+    
+    .save-all-btn:hover {
+        background: linear-gradient(135deg, #95BBFE, #668BCC);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(102, 139, 204, 0.3);
+    }
     </style>
 </head>
 <body>
@@ -1109,6 +1252,116 @@
             
             // Call this once at page load to ensure initial consistency
             fixHeaderStyles();
+            
+            // Add calendar functionality
+            const calendarButton = document.getElementById('calendarButton');
+            
+            if (calendarButton) {
+                calendarButton.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    
+                    try {
+                        // Show a loading notification
+                        showNotification('Generating calendar events for next week...', 'info');
+                        
+                        // Fetch calendar data from our API
+                        const response = await fetch('/generate-calendar');
+                        const calendarData = await response.json();
+                        
+                        if (calendarData.error) {
+                            showNotification(`Error: ${calendarData.error}`, 'error');
+                            return;
+                        }
+                        
+                        // Create a temporary element to hold the event links
+                        const weeklyEventsDialog = document.createElement('div');
+                        weeklyEventsDialog.className = 'events-dialog';
+                        weeklyEventsDialog.innerHTML = `
+                            <div class="events-dialog-content">
+                                <span class="close-dialog">&times;</span>
+                                <h3>Office Schedule: ${calendarData.week_start} to ${calendarData.week_end}</h3>
+                                <p>Click on a day to add it to your calendar:</p>
+                                <div class="event-links"></div>
+                                <div class="save-all-container">
+                                    <button class="save-all-btn">Save All Days to Calendar</button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Add each day's event link
+                        const eventLinks = weeklyEventsDialog.querySelector('.event-links');
+                        calendarData.events.forEach(event => {
+                            const eventLink = document.createElement('a');
+                            eventLink.href = event.event_url;
+                            eventLink.className = 'calendar-event-link';
+                            eventLink.target = '_blank';
+                            eventLink.innerHTML = `
+                                <div class="event-day">${event.day_name}</div>
+                                <div class="event-date">${event.formatted_date}</div>
+                                <div class="event-location">${event.location}</div>
+                            `;
+                            eventLinks.appendChild(eventLink);
+                        });
+                        
+                        // Add to DOM and handle closing
+                        document.body.appendChild(weeklyEventsDialog);
+                        weeklyEventsDialog.style.display = 'block';
+                        
+                        // Handle save all button
+                        const saveAllBtn = weeklyEventsDialog.querySelector('.save-all-btn');
+                        saveAllBtn.addEventListener('click', function() {
+                            // Open each event URL in sequence
+                            const saveAllEvents = async () => {
+                                for (let i = 0; i < calendarData.events.length; i++) {
+                                    const event = calendarData.events[i];
+                                    // Open the URL in a new window
+                                    const eventWindow = window.open(event.event_url, '_blank');
+                                    
+                                    // Wait a moment between opening each window to avoid being blocked
+                                    if (i < calendarData.events.length - 1) {
+                                        await new Promise(resolve => setTimeout(resolve, 1500));
+                                    }
+                                }
+                                
+                                // Show success notification
+                                showNotification('All events have been opened for adding to calendar', 'success');
+                                
+                                // Close the dialog
+                                weeklyEventsDialog.style.display = 'none';
+                                setTimeout(() => {
+                                    weeklyEventsDialog.remove();
+                                }, 300);
+                            };
+                            
+                            saveAllEvents();
+                        });
+                        
+                        // Handle close button
+                        const closeBtn = weeklyEventsDialog.querySelector('.close-dialog');
+                        closeBtn.addEventListener('click', function() {
+                            weeklyEventsDialog.style.display = 'none';
+                            setTimeout(() => {
+                                weeklyEventsDialog.remove();
+                            }, 300);
+                        });
+                        
+                        // Close dialog if clicking outside
+                        window.addEventListener('click', function(event) {
+                            if (event.target === weeklyEventsDialog) {
+                                weeklyEventsDialog.style.display = 'none';
+                                setTimeout(() => {
+                                    weeklyEventsDialog.remove();
+                            }, 300);
+                            }
+                        });
+                        
+                        showNotification('Calendar events generated successfully', 'success');
+                    } catch (error) {
+                        console.error('Error fetching calendar data:', error);
+                        showNotification('Error generating calendar events', 'error');
+                    }
+                });
+            }
         });
         
         // Create a function to radically fix header styles

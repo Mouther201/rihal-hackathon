@@ -997,6 +997,97 @@ async def visualize_floors():
     return "<p>No seating plan available</p>"
 
 
+@app.get("/generate-calendar")
+async def generate_calendar_events():
+    """Generate calendar events for onsite/offsite days for specific week of August 18-22"""
+    if not Path("seating_plan.csv").exists():
+        return {"error": "No seating plan available"}
+    
+    try:
+        df = pd.read_csv("seating_plan.csv")
+        
+        # Use fixed dates: August 18-22, 2023 (Monday-Friday)
+        from datetime import datetime
+        
+        # Define the specific dates we want (August 18-22, 2023)
+        specific_dates = [
+            {"date": "20230818", "formatted_date": "Aug 18", "day_name": "Monday"},
+            {"date": "20230819", "formatted_date": "Aug 19", "day_name": "Tuesday"},
+            {"date": "20230820", "formatted_date": "Aug 20", "day_name": "Wednesday"},
+            {"date": "20230821", "formatted_date": "Aug 21", "day_name": "Thursday"},
+            {"date": "20230822", "formatted_date": "Aug 22", "day_name": "Friday"}
+        ]
+        
+        # Create calendar events based on floor assignment
+        calendar_events = []
+        
+        for day_idx, date_info in enumerate(specific_dates):
+            date = date_info["date"]
+            day_name = date_info["day_name"]
+            formatted_date = date_info["formatted_date"]
+            
+            # Determine if it's a Floor 1 day or Floor 2 day
+            if day_idx % 2 == 0:  # Mon, Wed, Fri
+                title = f"Office Day - Floor 1 ({day_name}, {formatted_date})"
+                location = "Office Floor 1"
+                description = f"Working onsite at Floor 1 on {day_name}, {formatted_date}"
+            else:  # Tue, Thu
+                title = f"Office Day - Floor 2 ({day_name}, {formatted_date})"
+                location = "Office Floor 2"
+                description = f"Working onsite at Floor 2 on {day_name}, {formatted_date}"
+                
+            # Start and end times (9am to 5pm)
+            start_time = "090000"
+            end_time = "170000"
+            
+            # Create Google Calendar event URL
+            event_url = (
+                f"https://calendar.google.com/calendar/render?"
+                f"action=TEMPLATE"
+                f"&text={title}"
+                f"&dates={date}T{start_time}/{date}T{end_time}"
+                f"&details={description}"
+                f"&location={location}"
+                f"&sf=true"
+                f"&output=xml"
+            )
+            
+            calendar_events.append({
+                "date": date,
+                "day_name": day_name,
+                "formatted_date": formatted_date,
+                "title": title,
+                "location": location,
+                "event_url": event_url
+            })
+        
+        # Return events for the specific week
+        return {
+            "events": calendar_events,
+            "week_start": "2023-08-18",
+            "week_end": "2023-08-22",
+            "all_events_url": generate_combined_calendar_url(calendar_events)
+        }
+    except Exception as e:
+        import traceback
+        print(f"Error generating calendar events: {traceback.format_exc()}")
+        return {"error": f"Error generating calendar events: {str(e)}"}
+
+def generate_combined_calendar_url(events):
+    """Generate a URL to add all events to calendar at once"""
+    # Unfortunately, Google Calendar doesn't support adding multiple events at once via URL
+    # So we'll just return the URL for the first event as a fallback
+    if events:
+        return events[0]["event_url"]
+    return ""
+
+if __name__ == "__main__":
+    # Create necessary directories
+    Path("static").mkdir(exist_ok=True)
+    Path("uploads").mkdir(exist_ok=True)
+    Path("processed").mkdir(exist_ok=True)
+    
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 if __name__ == "__main__":
     # Create necessary directories
     Path("static").mkdir(exist_ok=True)
