@@ -1088,10 +1088,4 @@ if __name__ == "__main__":
     Path("processed").mkdir(exist_ok=True)
     
     uvicorn.run(app, host="0.0.0.0", port=8000)
-if __name__ == "__main__":
-    # Create necessary directories
-    Path("static").mkdir(exist_ok=True)
-    Path("uploads").mkdir(exist_ok=True)
-    Path("processed").mkdir(exist_ok=True)
-    
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+

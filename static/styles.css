@@ -1,433 +1,789 @@
 /* Modern UI styling for seating planner */
 :root {
-  --primary: #4285F4;
-  --primary-light: #a0c3ff;
-  --primary-dark: #0d47a1;
-  --secondary: #34A853;
-  --text: #202124;
-  --text-light: #5f6368;
-  --background: #f8f9fa;
-  --card-bg: #ffffff;
-  --accent: #EA4335;
-  --border: #dadce0;
-  --success: #34A853;
-  --warning: #FBBC05;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  --font-main: 'Roboto', 'Segoe UI', sans-serif;
+    --purple: #9A47AA;
+    --light-purple: #b76ac5;
+    --grey: #D9D9D9;
+    --light-blue: #95BBFE;
+    --blue: #668BCC;
+    --dark-text: #333;
+    --light-text: #fff;
+    --gradient: linear-gradient(135deg, var(--purple), var(--blue));
+    --gradient-hover: linear-gradient(135deg, var(--blue), var(--purple));
+    --box-shadow: 0 8px 20px rgba(154, 71, 170, 0.15);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: var(--font-main);
-  background-color: var(--background);
-  color: var(--text);
-  line-height: 1.6;
-  padding: 0;
-  margin: 0;
+    font-family: 'Courier Prime', monospace;
+    background-color: #f8f9fa;
+    color: var(--dark-text);
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Remove the rectangular background pattern */
+.background-pattern {
+    display: none; /* Hide the background pattern div */
 }
 
 .container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  padding: 15px 0;
-  margin-bottom: 30px;
-  border-bottom: 1px solid var(--border);
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 50px;
+    background: white;
+    padding: 20px 40px;
+    border-radius: 20px;
+    box-shadow: var(--box-shadow);
 }
 
 .logo-container {
-  width: 120px;
-  height: 120px;
-  margin-right: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent;
+    display: flex;
+    align-items: center;
 }
 
 .logo {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+    height: 80px;
+    margin-right: 20px;
+    animation: pulse 2s infinite alternate;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
 }
 
 h1 {
-  font-size: 2.2rem;
-  color: var(--primary-dark);
-  font-weight: 500;
-  margin-left: 20px;
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
 }
 
 h2 {
-  font-size: 1.8rem;
-  color: var(--primary-dark);
-  font-weight: 500;
-  margin-bottom: 20px;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 10px;
+    color: var(--purple);
+}
+
+/* CRITICAL FIX: Remove all decorative h2 underlines */
+h2::after {
+    display: none !important;
+    content: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 10px;
+    color: var(--purple);
+}
+
+/* Reset all card header styling to ensure consistency */
+.card-header {
+    background: linear-gradient(135deg, #9A47AA, #668BCC) !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 20px !important;
+    border: none !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Reset all h2 styling inside card headers */
+.card-header h2 {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 1.8rem !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    background-clip: initial !important;
+    -webkit-background-clip: initial !important;
+    border: none !important;
+    position: static !important;
+}
+
+/* Explicitly target the problematic Upload Employee Data header */
+.card:first-of-type .card-header h2::after,
+#downloadContainer .card-header h2::after,
+#resultsContainer .card-header h2::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Ensure these overrides aren't removed by specificity issues */
+div.card-header h2,
+.card div.card-header h2,
+.card > div.card-header > h2,
+body .card .card-header h2,
+body .container .card .card-header h2 {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+}
+
+/* Explicitly disable decorative underline for all h2 elements */
+div.card-header h2::after,
+.card div.card-header h2::after,
+.card > div.card-header > h2::after,
+body .card .card-header h2::after,
+body .container .card .card-header h2::after {
+    display: none !important;
+    content: none !important;
 }
 
 .card {
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  padding: 25px;
-  margin-bottom: 25px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    margin-bottom: 40px;
+    transition: var(--transition);
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(154, 71, 170, 0.2);
 }
 
-.upload-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 30px;
+/* Ensure all card headers maintain white text on gradient background */
+.card-header {
+    background: var(--gradient);
+    padding: 20px;
+    color: var(--light-text);
+}
+
+.card-header h2 {
+    color: white !important; /* Force white color for all headers */
+    margin-bottom: 0;
+    -webkit-text-fill-color: white; /* Override any background-clip effects */
+    background-clip: initial;
+    -webkit-background-clip: initial;
+}
+
+/* Make sure text stays white in all states */
+.animate__fadeInUp .card-header h2 {
+    color: white !important;
+    -webkit-text-fill-color: white;
+}
+
+/* Ensure consistent gradient background across all states */
+.download-container .card-header,
+.results-container .card-header {
+    background: var(--gradient);
+}
+
+.card-body {
+    padding: 30px;
+}
+
+.upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    border: 2px dashed var(--light-blue);
+    border-radius: 15px;
+    margin: 20px 0;
+    transition: var(--transition);
+    background: rgba(149, 187, 254, 0.05);
+}
+
+.upload-area:hover, .upload-area.dragover {
+    border-color: var(--purple);
+    background: rgba(154, 71, 170, 0.05);
+}
+
+.upload-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: var(--blue);
+    width: 40px;
+    height: 40px;
 }
 
 .file-input {
-  opacity: 0;
-  width: 0.1px;
-  height: 0.1px;
-  position: absolute;
+    display: none;
 }
 
-.file-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px 25px;
-  background-color: var(--primary);
-  color: white;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  min-width: 220px;
-  text-align: center;
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 12px rgba(154, 71, 170, 0.2);
+    text-decoration: none;
+    gap: 8px;
+    min-width: 160px;
+    text-align: center;
+    margin: 8px;
 }
 
-.file-label:hover {
-  background-color: var(--primary-dark);
-  transform: scale(1.02);
+.btn:hover {
+    background: var(--gradient-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 139, 204, 0.4);
 }
 
-.file-label:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--primary-light);
+.btn svg {
+    width: 16px;
+    height: 16px;
 }
 
-.file-label svg {
-  margin-right: 10px;
+.btn.download {
+    background: var(--gradient);
+}
+
+/* Update calendar button to match download button with gradient using #668BCC */
+.btn.calendar {
+    background: linear-gradient(135deg, #668BCC, #95BBFE);
+}
+
+.btn.calendar:hover {
+    background: linear-gradient(135deg, #95BBFE, #668BCC);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.upload-help {
+    font-size: 14px;
+    color: #888;
+    margin-top: 15px;
+    text-align: center;
 }
 
 .status-message {
-  margin-top: 15px;
-  color: var(--text-light);
-  font-size: 0.95rem;
-  text-align: center;
-  height: 20px;
-  animation: fadeIn 0.5s ease;
+    margin-top: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background-color: rgba(149, 187, 254, 0.1);
+    border-left: 4px solid var(--light-blue);
+    font-size: 14px;
+    display: none;
 }
 
-/* Enhanced spinner styling */
+.status-message.success {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left-color: #4CAF50;
+    color: #2E7D32;
+}
+
+.status-message.error {
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left-color: #F44336;
+    color: #D32F2F;
+}
+
+/* Replace the spinner CSS with an image-based spinner */
 .spinner {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  margin: 40px 0;
-  padding: 30px;
-  position: relative;
-  z-index: 100;
+    display: none;
+    justify-content: center;
+    margin: 30px 0;
 }
 
-.spinner-outer {
-  padding: 20px;
-  background-color: rgba(255,255,255,0.9);
-  border-radius: 50%;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+.spinner img {
+    width: 80px;
+    height: 80px;
 }
 
-.spinner-wheel {
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-top: 4px solid var(--primary);
-  border-right: 4px solid var(--success);
-  border-bottom: 4px solid var(--warning);
-  border-left: 4px solid var(--accent);
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1.2s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+.download-container {
+    display: none;
+    margin-top: 30px;
 }
 
-.spinner .status-message {
-  margin-top: 25px;
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: var(--primary-dark);
-}
-
-.download-link {
-  display: none;
-  text-align: center;
-  margin: 30px 0;
-}
-
-.download-button {
-  display: inline-block;
-  padding: 12px 25px;
-  background-color: var(--success);
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.download-button:hover {
-  background-color: #2d8746;
-  transform: translateY(-2px);
-}
-
-.floor-plans {
-  margin-top: 40px;
-}
-
-/* Seat visualization styles */
-.floor-plot-container {
-  margin-bottom: 40px;
-  padding: 25px;
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-  transition: transform 0.2s ease;
-}
-
-.floor-plot-container:hover {
-  transform: translateY(-3px);
-}
-
-.floor-plot-container h2 {
-  margin-bottom: 20px;
-  color: var(--primary-dark);
-  font-weight: 500;
-}
-
-.table-container {
-  display: inline-block;
-  margin: 15px;
-  vertical-align: top;
-  transition: transform 0.2s ease;
-}
-
-.table-container:hover {
-  transform: scale(1.02);
-}
-
-.table {
-  position: relative;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background-color: #f5f7fa;
-  border: 2px solid #e8eaed;
-  margin: 20px auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.seat {
-  position: absolute;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background-color: var(--primary-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  color: white;
-  font-size: 14px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  transform: translate(-50%, -50%);
-  transition: transform 0.2s ease;
-}
-
-.seat:hover {
-  transform: translate(-50%, -50%) scale(1.1);
-  z-index: 100;
-}
-
-.empty-seat {
-  background-color: #e0e0e0;
-  color: #9aa0a6;
-  border: 1px dashed #bdc1c6;
-}
-
-.emp-id {
-  font-size: 15px;
-  font-weight: bold;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-}
-
-.seat-num {
-  position: absolute;
-  font-size: 10px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  text-align: center;
-  line-height: 18px;
-  color: var(--text);
-  top: -5px;
-  right: -5px;
-  border: 1px solid var(--border);
-  font-weight: normal;
-}
-
-.employee-tooltip {
-  visibility: hidden;
-  width: 130px;
-  background-color: #333333ee;
-  color: #fff;
-  text-align: center;
-  border-radius: 8px;
-  padding: 8px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -65px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  font-size: 13px;
-  line-height: 1.4;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-}
-
-.seat:hover .employee-tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
-.table-title {
-  text-align: center;
-  font-weight: 500;
-  margin-bottom: 8px;
-  color: var(--text);
-}
-
-.legend {
-  margin-top: 15px;
-  margin-bottom: 25px;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #f5f7fa;
-  border: 1px solid var(--border);
-}
-
-.legend-item {
-  display: inline-block;
-  margin-right: 15px;
-  margin-bottom: 8px;
-}
-
-.legend-color {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
-.floor-summary {
-  margin-bottom: 20px;
-  padding: 12px 15px;
-  background-color: #e8f0fe;
-  border-radius: 8px;
-  font-size: 16px;
-  border-left: 4px solid var(--primary);
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(90deg); }
-  50% { transform: rotate(180deg); }
-  75% { transform: rotate(270deg); }
-  100% { transform: rotate(360deg); }
+.results-container {
+    display: none;
+    margin-top: 30px;
+    opacity: 1;
+    animation: fadeIn 0.5s ease;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-/* Responsive design */
+#floorPlansContent {
+    min-height: 300px;
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Make sure the calendar container and floor plans don't get hidden */
+#floorPlansContent .calendar-container,
+#floorPlansContent .floor-plot-container {
+    display: block !important;
+    width: 100%;
+}
+
+/* Ensure proper rendering of visualization elements */
+.tab-content.active {
+    display: block;
+    width: 100%;
+}
+
+/* Add a wrapper to ensure content doesn't overflow */
+.visualization-wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+footer {
+    margin-top: 60px;
+    background: var(--gradient);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 20px 20px 0 0;
+    font-size: 14px;
+}
+
 @media (max-width: 768px) {
-  .container {
-    padding: 15px;
-  }
-  
-  h1 {
-    font-size: 1.8rem;
-  }
-  
-  .logo-container {
-    width: 90px;
-    height: 90px;
-  }
-  
-  .table {
-    width: 180px;
-    height: 180px;
-  }
-  
-  .seat {
-    width: 42px;
-    height: 42px;
-    font-size: 12px;
-  }
+    header {
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .logo-container {
+        margin-bottom: 20px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+    
+    .upload-area {
+        padding: 30px 15px;
+    }
+    
+    .feature-highlight {
+        flex-direction: column;
+    }
 }
 
-/* Add styles for refresh button */
-.refresh-container {
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-left: 4px solid var(--blue);
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    transform: translateX(120%);
+    transition: transform 0.5s ease;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification.success {
+    border-left-color: #4CAF50;
+}
+
+.notification.error {
+    border-left-color: #F44336;
+}
+
+.notification .close {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 100;
-}
-
-.refresh-button {
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 5px;
+    right: 5px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
+    font-size: 18px;
+    color: #999;
 }
 
-.refresh-button:hover {
-    background-color: #e0e0e0;
-    transform: rotate(30deg);
+.feature-highlight {
+    display: flex;
+    justify-content: space-around;
+    margin: 50px 0;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.feature {
+    flex: 1;
+    min-width: 250px;
+    max-width: 350px;
+    padding: 25px;
+    text-align: center;
+    margin: 15px;
+    background: var(--gradient);
+    border-radius: 15px;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+}
+
+.feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(154, 71, 170, 0.3);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+    stroke: white;
+    fill: none;
+}
+
+.feature h3 {
+    margin-bottom: 15px;
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    width: 100%;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.feature h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    opacity: 0.8;
+}
+
+.feature p {
+    color: white;
+    font-size: 15px;
+    line-height: 1.6;
+    width: 100%;
+}
+
+/* Force consistent header styling with high specificity */
+body .container .card .card-header, 
+body .container .card-header,
+.card .card-header,
+.card > .card-header,
+.card-header {
+    background: linear-gradient(135deg, var(--purple), var(--blue)) !important;
+    padding: 20px !important;
+    color: white !important;
+    border-radius: 20px 20px 0 0 !important;
+}
+
+body .card-header h2,
+.card-header h2 {
+    color: white !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    -webkit-text-fill-color: white !important;
+    background-clip: initial !important;
+    -webkit-background-clip: initial !important;
+}
+
+/* Clean reset for all card headers */
+.card-header, 
+div.card-header,
+body .container .card .card-header {
+    background-image: linear-gradient(135deg, #9A47AA, #668BCC) !important;
+    background: linear-gradient(135deg, #9A47AA, #668BCC) !important;
+    background-color: #9A47AA !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 20px !important;
+    color: white !important;
+}
+
+/* Reset for all h2 elements in headers */
+.card-header h2,
+div.card-header h2,
+body .container .card .card-header h2 {
+    color: white !important;
+    -webkit-text-fill-color: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    text-decoration: none !important;
+    background: none !important;
+    background-image: none !important;
+}
+
+/* Completely remove all ::after pseudo-elements */
+.card-header h2::after,
+div.card-header h2::after,
+body .container .card .card-header h2::after,
+h2::after {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+    border: none !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+
+/* Global font setting to Courier Prime for all elements */
+* {
+    font-family: 'Courier Prime', monospace;
+}
+
+/* Exception for SitShift logo text */
+h1 span[style*="Fira Code"] {
+    font-family: 'Fira Code', monospace !important;
+}
+
+/* Make sure all button, input, and other form elements use Courier Prime */
+button, 
+input, 
+select, 
+textarea, 
+.btn, 
+.notification, 
+.status-message,
+.upload-help,
+p,
+h2, h3, h4, h5, h6,
+.card-header,
+footer {
+    font-family: 'Courier Prime', monospace !important;
+}
+
+/* Enhanced styling for stats cards */
+.stats-card {
+    background-color: #668BCC;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 15px rgba(102, 139, 204, 0.2);
+    color: white;
+    margin-bottom: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(102, 139, 204, 0.3);
+}
+
+.stats-card h3 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.stats-card h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 2px;
+}
+
+.stats-card p {
+    margin: 10px 0;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.stats-container {
+    padding: 10px;
+}
+
+/* Add an icon to the stats card */
+.stats-card .stats-icon {
+    margin-bottom: 15px;
+    width: 50px;
+    height: 50px;
+}
+
+/* Calendar event dialog styles */
+.events-dialog {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.3s;
+}
+
+.events-dialog-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    font-family: 'Courier Prime', monospace;
+    animation: slideIn 0.3s;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-dialog {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-dialog:hover {
+    color: #668BCC;
+}
+
+.event-links {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    gap: 10px;
+    justify-content: center;
+}
+
+.calendar-event-link {
+    display: block;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(149, 187, 254, 0.1), rgba(255, 255, 255, 0.9));
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    border-left: 3px solid #95BBFE;
+    min-width: 110px;
+    text-align: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-event-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(102, 139, 204, 0.2);
+    background: linear-gradient(135deg, rgba(149, 187, 254, 0.2), rgba(255, 255, 255, 1));
+}
+
+.calendar-event-link:nth-child(even) {
+    border-left: 3px solid #9A47AA;
+    background: linear-gradient(135deg, rgba(154, 71, 170, 0.1), rgba(255, 255, 255, 0.9));
+}
+
+.calendar-event-link:nth-child(even):hover {
+    background: linear-gradient(135deg, rgba(154, 71, 170, 0.2), rgba(255, 255, 255, 1));
+}
+
+.event-day {
+    font-weight: bold;
+    color: #668BCC;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.calendar-event-link:nth-child(even) .event-day {
+    color: #9A47AA;
+}
+
+.event-date {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.event-location {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.events-dialog h3 {
+    margin-top: 0;
+    color: #668BCC;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+/* Styles for Save All button */
+.save-all-container {
+    margin-top: 20px;
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px dashed #ddd;
+}
+
+.save-all-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #668BCC, #95BBFE);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-family: 'Courier Prime', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 12px rgba(102, 139, 204, 0.2);
+}
+
+.save-all-btn:hover {
+    background: linear-gradient(135deg, #95BBFE, #668BCC);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 139, 204, 0.3);
 }
