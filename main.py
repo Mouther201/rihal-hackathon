@@ -20,6 +20,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def root():
     return FileResponse("static/index.html")
+    
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Docker"""
+    return {"message": "Todo service ready"}
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
@@ -1087,5 +1092,9 @@ if __name__ == "__main__":
     Path("uploads").mkdir(exist_ok=True)
     Path("processed").mkdir(exist_ok=True)
     
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Get port from environment variable or use default
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    
+    uvicorn.run(app, host="0.0.0.0", port=port)
 

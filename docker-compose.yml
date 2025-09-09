@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8080:5000"
+    environment:
+      - APP_ENV=local
+    volumes:
+      - ./static:/app/static
+      - ./uploads:/app/uploads
+      - ./processed:/app/processed
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s

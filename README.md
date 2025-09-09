@@ -155,3 +155,56 @@ To add new features or modify the existing ones:
 ## Contact
 
 For support or inquiries, please contact [malhashmi001@gmail.com](mailto:malhashmi001@gmail.com)
+
+## Docker Setup
+
+This project is containerized with Docker for easy deployment and consistent development environments. Below are the three primary Docker commands demonstrated in this project:
+
+### 1. Docker Build
+
+Build a Docker image from the Dockerfile:
+
+```bash
+docker build -t sitshift .
+```
+
+This command creates a Docker image named "sitshift" based on the instructions in the Dockerfile.
+
+### 2. Docker Run
+
+Run a container from the built image:
+
+```bash
+docker run -p 8080:5000 sitshift
+```
+
+This command starts a container from the "sitshift" image, mapping port 5000 inside the container to port 8080 on your host machine.
+
+### 3. Docker Compose
+
+The preferred way to run this application:
+
+```bash
+# Start the services
+docker-compose up
+
+# Stop and remove the services
+docker-compose down
+```
+
+`docker-compose up` builds the image if needed, starts the container, and streams logs to the console. The API becomes reachable at http://localhost:8080.
+
+`docker-compose down` cleanly stops and removes the container along with any anonymous volumes.
+
+## Application Access
+
+After starting the application using either `docker run` or `docker-compose up`, access:
+
+- Web Interface: http://localhost:8080
+- Health Check API: http://localhost:8080/health (returns `{"message": "Todo service ready"}`)
+
+## Prerequisites
+
+- Docker and Docker Compose
+
+No other installations required. The application has been verified to run identically on Windows, macOS, and Linux.
