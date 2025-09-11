@@ -196,6 +196,29 @@ docker-compose down
 
 `docker-compose down` cleanly stops and removes the container along with any anonymous volumes.
 
+### 4. Pushing to Docker Hub
+
+To push the Docker image to Docker Hub for sharing with others, follow these steps:
+
+1. Make sure you're logged in to Docker Hub:
+   ```bash
+   docker login
+   ```
+
+2. Build the image first, then push it:
+   ```bash
+   # Build the image
+   docker-compose build
+   
+   # Push the image
+   docker-compose push
+   ```
+
+For convenience, you can use the provided scripts that handle both building and pushing:
+
+- **Windows**: Run `build-and-push.bat`
+- **macOS/Linux**: Run `./build-and-push.sh` (make it executable with `chmod +x build-and-push.sh`)
+
 ## Application Access
 
 After starting the application using either `docker run` or `docker-compose up`, access:

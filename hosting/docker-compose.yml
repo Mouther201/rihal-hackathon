@@ -1,8 +1,5 @@
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: mouther201/sitshift:latest
     ports:
       - "8080:5000"
