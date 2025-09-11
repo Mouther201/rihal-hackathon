@@ -6,7 +6,6 @@ services:
     environment:
       - APP_ENV=local
     volumes:
-      - ./static:/app/static
       - ./uploads:/app/uploads
       - ./processed:/app/processed
     healthcheck:
