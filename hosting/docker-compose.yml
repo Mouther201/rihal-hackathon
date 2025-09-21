@@ -2,7 +2,7 @@ services:
   api:
     image: mouther201/sitshift:latest
     ports:
-      - "8080:5000"
+      - "8000:5000"
     environment:
       - APP_ENV=local
     volumes:
